@@ -1,0 +1,58 @@
+# Siêu tham số của toàn dự án. KHÔNG viết cứng trong mã: đọc từ tệp này.
+# Giá trị khởi đầu theo Bảng 5.3 của đề cương; giá trị cuối cùng (sau khi tinh chỉnh)
+# được ghi vào models/metadata.yaml và báo cáo.
+
+random_seed: 42                 # dùng cho mọi notebook, chia fold, huấn luyện
+
+# --- Dữ liệu ---------------------------------------------------------------
+data:
+  m1_split: {train: 35, val: 8, test: 8}   # chia theo đề cương, lưu ở m1_split.csv
+  qa_split: {train: 120, test: 80}         # bộ câu hỏi đánh giá, giữ tỷ lệ 4 loại câu
+
+# --- OCR --------------------------------------------------------------------
+ocr:
+  dpi: 300
+  engine: paddleocr             # đối chứng: tesseract (lang vie); xem docs/ocr_comparison.md
+
+# --- M1: phân loại đoạn vào 11 lớp (10 mục + "khác") -------------------------
+m1_section:
+  tfidf:
+    word_ngram: [1, 2]
+    char_ngram: [2, 4]
+    C: 1.0
+
+# --- M2: phân loại mức Bloom (7 lớp, 0-6) ------------------------------------
+m2_bloom:
+  n_folds: 5                    # StratifiedGroupKFold theo môn
+  class_weight: balanced
+  phobert:                      # B3, chạy trên CPU (làm nếu còn thời gian)
+    max_len: 64
+    batch_size: 16
+    lr: 2.0e-5
+    epochs: 5                   # thử trong khoảng 5-10
+
+# --- M3: truy xuất và hỏi đáp RAG --------------------------------------------
+m3_retrieval:
+  bm25_top_k: 30
+  dense_top_k: 30
+  rrf_k: 60
+  rerank_in: 20                 # số ứng viên sau RRF đưa vào reranker
+  context_k: 5                  # số đoạn đưa vào LLM
+
+m3_embedding:
+  model: intfloat/multilingual-e5-small
+
+m3_reranker:
+  objective: lambdarank         # LightGBM LambdaMART
+  n_estimators: 300
+  learning_rate: 0.05
+
+m3_llm:
+  provider: gemini
+  fallback_provider: groq       # dùng khi Gemini trả 429 hoặc lỗi mạng
+  temperature: 0.2
+  max_tokens: 512
+
+# --- M4: gợi ý lộ trình học --------------------------------------------------
+m4_pathway:
+  max_credits_per_term: 20

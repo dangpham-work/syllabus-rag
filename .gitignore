@@ -218,3 +218,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------
+# syllabus-rag
+# ---------------------------------------------------------------
+# Du lieu khong dua len GitHub (dung Drive nhom); chi giu khung thu muc
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Checkpoint mo hinh lon (vd. PhoBERT tinh chinh); mo hinh nho .pkl/.npy/.txt van commit
+models/phobert*/
+models/checkpoints/
+*.pt
+*.pth
+*.bin
+*.safetensors
