@@ -1,0 +1,8 @@
+{
+  "health": {"method": "GET", "path": "/health"},
+  "ask": {"method": "POST", "path": "/ask", "json": {"question": "Môn minh họa được đánh giá thế nào?", "course_code": "MOCK001", "top_k": 5}},
+  "learning_path": {"method": "POST", "path": "/learning-path", "json": {"target": "MOCK002", "completed": [], "max_credits": 20}},
+  "analyze_syllabus": {"method": "POST", "path": "/analyze-syllabus", "multipart": {"field": "file", "filename": "example.pdf", "content_type": "application/pdf"}},
+  "classify_clo": {"method": "POST", "path": "/classify-clo", "json": {"text": "Áp dụng phương pháp để giải bài tập minh họa."}},
+  "classify_clo_batch": {"method": "POST", "path": "/classify-clo", "json": {"texts": ["Áp dụng phương pháp để giải bài tập minh họa."]}}
+}
