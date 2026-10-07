@@ -1,0 +1,43 @@
+{
+  "course_code": "841401",
+  "course_name": "Giải tích 1",
+  "credits": 3,
+  "prerequisites": [],
+  "clos": [
+    {
+      "clo_id": "CLO1",
+      "text": "Trình bày được các định lý và tính chất về giới hạn, tính liên tục và vi tích phân của hàm một biến.",
+      "bloom_level": 2,
+      "bloom_name": "Hiểu (Understand)",
+      "confidence": 0.95
+    },
+    {
+      "clo_id": "CLO2",
+      "text": "Vận dụng các công thức tính đạo hàm và tích phân để giải quyết các bài toán vi tích phân và phương trình vi phân cấp 1.",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.92
+    },
+    {
+      "clo_id": "CLO3",
+      "text": "Phân tích và mô hình hóa các bài toán tính diện tích, thể tích và tối ưu hóa trong tin học.",
+      "bloom_level": 4,
+      "bloom_name": "Phân tích (Analyze)",
+      "confidence": 0.87
+    }
+  ],
+  "sections": {
+    "general_info": "1. Thông tin chung học phần:\n- Tên học phần: Giải tích 1\n- Mã học phần: 841401\n- Số tín chỉ: 3 (3 LT + 0 TH)\n- Học phần tiên quyết: Không\n- Đơn vị phụ trách: Khoa Toán - Ứng dụng",
+    "course_description": "2. Mô tả tóm tắt học phần: Trang bị các kiến thức cơ bản về phép tính vi tích phân hàm một biến số thực và chuỗi số.",
+    "course_objectives": "3. Mục tiêu học phần: Cung cấp công cụ toán học nền tảng cho các môn chuyên ngành khoa học máy tính.",
+    "course_learning_outcomes": "4. Chuẩn đầu ra học phần: CLO1 (Hiểu giới hạn & đạo hàm); CLO2 (Tính tích phân & chuỗi); CLO3 (Ứng dụng mô hình hóa).",
+    "course_content": "5. Nội dung chi tiết học phần: Chương 1: Hàm số và giới hạn; Chương 2: Đạo hàm và vi phân; Chương 3: Phép tính tích phân; Chương 4: Chuỗi số và chuỗi hàm.",
+    "teaching_methods": "6. Phương pháp dạy và học: Giảng giải lý thuyết kết hợp chữa bài tập trên lớp.",
+    "assessment": "7. Đánh giá học phần: Đánh giá quá trình (kiểm tra giữa kỳ, bài tập): 50%, Thi cuối kỳ: 50%.",
+    "learning_resources": "8. Giáo trình và tài liệu tham khảo: Giáo trình Giải tích 1 - ĐH Sài Gòn; Calculus (James Stewart).",
+    "teaching_schedule": "9. Kế hoạch giảng dạy chi tiết: Giảng dạy trong 15 tuần.",
+    "course_policies": "10. Yêu cầu học phần: Tham dự tối thiểu 80% số tiết, hoàn thành bài tập về nhà."
+  },
+  "missing_sections": [],
+  "model_version": "v0.1-mock"
+}

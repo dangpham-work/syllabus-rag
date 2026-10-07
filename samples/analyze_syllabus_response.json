@@ -1,0 +1,51 @@
+{
+  "course_code": "841020",
+  "course_name": "Cơ sở lập trình",
+  "credits": 3,
+  "prerequisites": [],
+  "clos": [
+    {
+      "clo_id": "CLO1",
+      "text": "Trình bày được các khái niệm cơ bản về thuật toán, lưu đồ thuật toán và kiểu dữ liệu cơ sở trong ngôn ngữ C/C++.",
+      "bloom_level": 2,
+      "bloom_name": "Hiểu (Understand)",
+      "confidence": 0.94
+    },
+    {
+      "clo_id": "CLO2",
+      "text": "Áp dụng cấu trúc điều khiển rẽ nhánh (if-else, switch-case) và vòng lặp (for, while, do-while) để giải quyết các bài toán tính toán cơ bản.",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.91
+    },
+    {
+      "clo_id": "CLO3",
+      "text": "Cài đặt và thao tác được với mảng một chiều, mảng hai chiều, chuỗi ký tự và kiểu dữ liệu cấu trúc (struct).",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.88
+    },
+    {
+      "clo_id": "CLO4",
+      "text": "Thiết kế và phân rã chương trình thành các hàm chức năng, sử dụng con trỏ và quản lý bộ nhớ động ở mức cơ bản.",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.86
+    }
+  ],
+  "sections": {
+    "general_info": "1. Thông tin chung học phần:\n- Tên học phần: Cơ sở lập trình\n- Mã học phần: 841020\n- Số tín chỉ: 3 (Lý thuyết: 2, Thực hành: 1)\n- Học phần tiên quyết: Không\n- Học phần học trước: Tin học đại cương\n- Khoa/Bộ môn phụ trách: Khoa Công nghệ Thông tin - Trường ĐH Sài Gòn",
+    "course_description": "2. Mô tả tóm tắt học phần:\nHọc phần cung cấp cho sinh viên kiến thức nền tảng về tư duy thuật toán và kỹ thuật lập trình cơ bản bằng ngôn ngữ C/C++. Nội dung bao gồm cú pháp cơ bản, các cấu trúc điều khiển, mảng, hàm, con trỏ và thao tác tệp tin.",
+    "course_objectives": "3. Mục tiêu học phần:\n- CO1: Nắm vững tư duy giải quyết bài toán bằng lập trình.\n- CO2: Rèn luyện kỹ năng viết mã sạch, gỡ lỗi và kiểm thử chương trình cơ bản.",
+    "course_learning_outcomes": "4. Chuẩn đầu ra học phần (CLO):\n- CLO1: Trình bày được các khái niệm cơ bản về thuật toán và kiểu dữ liệu.\n- CLO2: Áp dụng cấu trúc điều khiển rẽ nhánh và vòng lặp.\n- CLO3: Cài đặt và thao tác được với mảng và chuỗi ký tự.\n- CLO4: Thiết kế hàm và quản lý bộ nhớ con trỏ cơ bản.",
+    "course_content": "5. Nội dung chi tiết học phần:\n- Chương 1: Giới thiệu lập trình và lưu đồ thuật toán\n- Chương 2: Cú pháp, kiểu dữ liệu và toán tử\n- Chương 3: Cấu trúc rẽ nhánh và vòng lặp\n- Chương 4: Mảng và chuỗi ký tự\n- Chương 5: Hàm và truyền tham số\n- Chương 6: Con trỏ và cấp phát bộ nhớ động",
+    "teaching_methods": "6. Phương pháp dạy và học:\n- Thuyết giảng lý thuyết kết hợp thị phạm bài tập trên lớp.\n- Thực hành lập trình tại phòng máy tính với các bài lab hàng tuần.",
+    "assessment": "7. Phương pháp và tiêu chí đánh giá học phần:\n- Đánh giá quá trình (chuyên cần, bài tập trên lớp): 20%\n- Đánh giá thực hành (bài thi thực hành phòng máy): 30%\n- Thi kết thúc học phần (tự luận hoặc trắc nghiệm): 50%",
+    "learning_resources": "8. Giáo trình và tài liệu tham khảo:\n- [1] Giáo trình Kỹ thuật lập trình C - ĐH Sài Gòn.\n- [2] C How to Program (9th Edition), Paul Deitel & Harvey Deitel, Pearson, 2021.\n- [3] The C Programming Language, Brian W. Kernighan, Dennis M. Ritchie.",
+    "teaching_schedule": "9. Kế hoạch giảng dạy chi tiết:\n- Tuần 1-3: Giới thiệu, kiểu dữ liệu, toán tử\n- Tuần 4-7: Cấu trúc rẽ nhánh và lặp\n- Tuần 8-11: Mảng và hàm\n- Tuần 12-14: Con trỏ và bộ nhớ động\n- Tuần 15: Ôn tập và tổng kết",
+    "course_policies": "10. Yêu cầu và quy định đối với học phần:\n- Sinh viên phải tham dự tối thiểu 80% số tiết lý thuyết và 100% các buổi thực hành.\n- Không được phép sao chép mã nguồn của người khác; vi phạm sẽ nhận điểm 0 cho toàn bộ học phần."
+  },
+  "missing_sections": [],
+  "model_version": "v0.1-mock"
+}
+
