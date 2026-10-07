@@ -1,0 +1,45 @@
+{
+  "course_code": "841108",
+  "course_name": "Cấu trúc dữ liệu và giải thuật",
+  "credits": 4,
+  "prerequisites": [
+    "841303"
+  ],
+  "clos": [
+    {
+      "clo_id": "CLO1",
+      "text": "Trình bày được cấu trúc và nguyên lý của các cấu trúc dữ liệu danh sách, cây, đồ thị.",
+      "bloom_level": 2,
+      "bloom_name": "Hiểu (Understand)",
+      "confidence": 0.93
+    },
+    {
+      "clo_id": "CLO2",
+      "text": "Cài đặt và áp dụng các thuật toán sắp xếp (QuickSort, MergeSort) và tìm kiếm trên dữ liệu lớn.",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.9
+    },
+    {
+      "clo_id": "CLO3",
+      "text": "Phân tích và đánh giá độ phức tạp thuật toán O(n) về mặt thời gian và bộ nhớ.",
+      "bloom_level": 4,
+      "bloom_name": "Phân tích (Analyze)",
+      "confidence": 0.89
+    }
+  ],
+  "sections": {
+    "general_info": "1. Thông tin chung học phần:\n- Tên học phần: Cấu trúc dữ liệu và giải thuật\n- Mã học phần: 841108\n- Số tín chỉ: 4 (3 LT + 1 TH)\n- Học phần tiên quyết: 841303 (Kỹ thuật lập trình)\n- Đơn vị phụ trách: Khoa CNTT - ĐH Sài Gòn",
+    "course_description": "2. Mô tả tóm tắt học phần: Nghiên cứu các phương pháp biểu diễn dữ liệu và giải thuật xử lý dữ liệu hiệu quả.",
+    "course_objectives": "3. Mục tiêu học phần: Cung cấp kiến thức về tổ chức dữ liệu và tư duy tối ưu hóa giải thuật.",
+    "course_learning_outcomes": "4. Chuẩn đầu ra học phần: CLO1 (Cấu trúc dữ liệu tuyến tính/phi tuyến); CLO2 (Thuật toán sắp xếp/tìm kiếm); CLO3 (Đánh giá độ phức tạp).",
+    "course_content": "5. Nội dung chi tiết học phần: Chương 1: Đánh giá độ phức tạp; Chương 2: Danh sách liên kết; Chương 3: Stack & Queue; Chương 4: Cây nhị phân tìm kiếm; Chương 5: Đồ thị; Chương 6: Bảng băm.",
+    "teaching_methods": "6. Phương pháp dạy và học: Lý thuyết kết hợp bài tập lớn và thực hành lập trình C++.",
+    "assessment": "7. Đánh giá học phần: Quá trình: 20%, Thực hành: 30%, Thi cuối kỳ: 50%.",
+    "learning_resources": "8. Giáo trình và tài liệu tham khảo: Data Structures and Algorithm Analysis in C++ (Mark Allen Weiss).",
+    "teaching_schedule": "9. Kế hoạch giảng dạy chi tiết: 15 tuần học theo đề cương.",
+    "course_policies": "10. Yêu cầu học phần: Bắt buộc đạt học phần tiên quyết 841303 trước khi đăng ký."
+  },
+  "missing_sections": [],
+  "model_version": "v0.1-mock"
+}
