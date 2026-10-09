@@ -1,0 +1,33 @@
+{
+  "health": {"status": "ok", "model_version": "mock-v0", "is_mock": true},
+  "ask": {
+    "is_mock": true,
+    "answer": "Ví dụ giả lập: môn học có đánh giá quá trình và thi cuối kỳ [1].",
+    "citations": [{"id": 1, "chunk_id": "mock-001-s9", "course_code": "MOCK001", "course_name": "Môn minh họa A", "section": 9, "page": 5, "source_file": "example.pdf"}],
+    "retrieved": [{"chunk_id": "mock-001-s9", "course_code": "MOCK001", "section": 9, "page": 5, "text": "Dữ liệu giả: đánh giá quá trình 40%, thi cuối kỳ 60%.", "score": 0.9}]
+  },
+  "learning_path": {
+    "is_mock": true,
+    "plan": [
+      {"term": 1, "courses": [{"course_code": "MOCK001", "course_name": "Môn minh họa A", "credits": 3}], "total_credits": 3},
+      {"term": 2, "courses": [{"course_code": "MOCK002", "course_name": "Môn minh họa B", "credits": 3}], "total_credits": 3}
+    ],
+    "soft_suggestions": [],
+    "warnings": ["Đây là dữ liệu giả để kiểm tra giao diện."]
+  },
+  "analyze_syllabus": {
+    "is_mock": true,
+    "syllabus": {
+      "course_code": "MOCK001", "name_vi": "Môn minh họa A", "source_file": "example.pdf",
+      "sections": [
+        {"number": 1, "title": "Thông tin tổng quát", "text": "Môn minh họa A; 3 tín chỉ."},
+        {"number": 4, "title": "Chuẩn đầu ra", "text": "G1: Áp dụng phương pháp để giải bài tập minh họa."}
+      ],
+      "clos": [{"id": "G1", "text": "Áp dụng phương pháp để giải bài tập minh họa.", "bloom_label": 3, "label_name": "Áp dụng", "confidence": 0.87}]
+    },
+    "missing_sections": [2, 3, 5, 6, 7, 8, 9, 10]
+  },
+  "classify_clo": {"is_mock": true, "label": 3, "label_name": "Áp dụng", "confidence": 0.87, "probabilities": {"0": 0.01, "1": 0.01, "2": 0.07, "3": 0.87, "4": 0.03, "5": 0.01, "6": 0.0}, "model_version": "mock-v0"},
+  "classify_clo_batch": {"is_mock": true, "results": [{"label": 3, "label_name": "Áp dụng", "confidence": 0.87, "probabilities": {"0": 0.01, "1": 0.01, "2": 0.07, "3": 0.87, "4": 0.03, "5": 0.01, "6": 0.0}, "model_version": "mock-v0"}]},
+  "ask_error_503": {"detail": {"code": "LLM_UNAVAILABLE", "message": "Chưa thể tạo câu trả lời. Bạn có thể xem đoạn trích bên dưới."}, "retrieved": [{"chunk_id": "mock-001-s9", "course_code": "MOCK001", "section": 9, "page": 5, "text": "Dữ liệu giả: đánh giá quá trình 40%, thi cuối kỳ 60%.", "score": 0.9}]}
+}
