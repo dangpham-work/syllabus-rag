@@ -1,0 +1,35 @@
+{
+  "plan": [
+    {
+      "semester": 1,
+      "courses": [
+        "841303",
+        "841403"
+      ],
+      "total_credits": 7
+    },
+    {
+      "semester": 2,
+      "courses": [
+        "841108",
+        "841044"
+      ],
+      "total_credits": 7
+    },
+    {
+      "semester": 3,
+      "courses": [
+        "841109"
+      ],
+      "total_credits": 4
+    }
+  ],
+  "soft_suggestions": [
+    "Khuyến nghị hoàn thành Kỹ thuật lập trình (841303) trước khi học Cấu trúc dữ liệu và giải thuật (841108) để nắm chắc kỹ thuật xử lý bộ nhớ động và con trỏ.",
+    "Nên phân bổ đều các môn có khối lượng thực hành lập trình nặng qua các học kỳ để đảm bảo hiệu quả làm bài tập lớn."
+  ],
+  "warnings": [
+    "Môn Cấu trúc dữ liệu và giải thuật (841108) có tiên quyết là Kỹ thuật lập trình (841303). Không thể đăng ký 841108 nếu chưa đạt 841303."
+  ]
+}
+

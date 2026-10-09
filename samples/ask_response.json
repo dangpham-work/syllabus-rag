@@ -1,0 +1,29 @@
+{
+  "answer": "Theo đề cương chi tiết học phần Cơ sở lập trình (mã môn 841020 - Khoa CNTT, Trường ĐH Sài Gòn), học phần này KHÔNG yêu cầu học phần tiên quyết bắt buộc. Tuy nhiên, sinh viên được khuyến nghị nên hoàn thành học phần học trước là Tin học đại cương.",
+  "citations": [
+    {
+      "course_code": "841020",
+      "section": "general_info",
+      "chunk_id": "841020_sec1_chunk0",
+      "quote": "Học phần tiên quyết: Không. Học phần học trước: Tin học đại cương."
+    }
+  ],
+  "retrieved_chunks": [
+    {
+      "chunk_id": "841020_sec1_chunk0",
+      "course_code": "841020",
+      "section": "general_info",
+      "content": "1. Thông tin chung học phần:\n- Tên học phần: Cơ sở lập trình\n- Mã học phần: 841020\n- Số tín chỉ: 3 (Lý thuyết: 2, Thực hành: 1)\n- Học phần tiên quyết: Không\n- Học phần học trước: Tin học đại cương",
+      "score": 0.935
+    },
+    {
+      "chunk_id": "841020_sec2_chunk0",
+      "course_code": "841020",
+      "section": "course_description",
+      "content": "2. Mô tả tóm tắt học phần: Học phần cung cấp kiến thức nền tảng về tư duy thuật toán và kỹ thuật lập trình cơ bản bằng ngôn ngữ C/C++.",
+      "score": 0.812
+    }
+  ],
+  "llm_provider": "mock"
+}
+

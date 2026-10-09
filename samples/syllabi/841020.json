@@ -1,0 +1,50 @@
+{
+  "course_code": "841020",
+  "course_name": "Cơ sở lập trình",
+  "credits": 3,
+  "prerequisites": [],
+  "clos": [
+    {
+      "clo_id": "CLO1",
+      "text": "Trình bày được các khái niệm cơ bản về thuật toán, lưu đồ và kiểu dữ liệu cơ sở.",
+      "bloom_level": 2,
+      "bloom_name": "Hiểu (Understand)",
+      "confidence": 0.94
+    },
+    {
+      "clo_id": "CLO2",
+      "text": "Áp dụng cấu trúc điều khiển rẽ nhánh và vòng lặp để giải quyết các bài toán tính toán cơ bản.",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.91
+    },
+    {
+      "clo_id": "CLO3",
+      "text": "Cài đặt và thao tác được với mảng, chuỗi ký tự và kiểu dữ liệu cấu trúc (struct).",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.88
+    },
+    {
+      "clo_id": "CLO4",
+      "text": "Thiết kế chương trình theo mô đun hàm, sử dụng con trỏ và quản lý bộ nhớ cơ bản.",
+      "bloom_level": 3,
+      "bloom_name": "Áp dụng (Apply)",
+      "confidence": 0.86
+    }
+  ],
+  "sections": {
+    "general_info": "1. Thông tin chung học phần:\n- Tên học phần: Cơ sở lập trình\n- Mã học phần: 841020\n- Số tín chỉ: 3 (2 LT + 1 TH)\n- Học phần tiên quyết: Không\n- Học phần học trước: Tin học đại cương\n- Đơn vị phụ trách: Khoa CNTT - ĐH Sài Gòn",
+    "course_description": "2. Mô tả tóm tắt học phần: Cung cấp tư duy thuật toán và kỹ thuật lập trình thủ tục căn bản bằng C/C++.",
+    "course_objectives": "3. Mục tiêu học phần: Nắm vững tư duy giải quyết bài toán và rèn luyện kỹ năng lập trình giải thuật.",
+    "course_learning_outcomes": "4. Chuẩn đầu ra học phần: CLO1 (Hiểu cú pháp); CLO2 (Áp dụng rẽ nhánh/lặp); CLO3 (Mảng & chuỗi); CLO4 (Hàm & con trỏ).",
+    "course_content": "5. Nội dung chi tiết học phần: Chương 1: Tổng quan; Chương 2: Kiểu dữ liệu & toán tử; Chương 3: Rẽ nhánh & lặp; Chương 4: Mảng; Chương 5: Hàm; Chương 6: Con trỏ.",
+    "teaching_methods": "6. Phương pháp dạy và học: Lý thuyết trên giảng đường kết hợp thực hành phòng máy tính.",
+    "assessment": "7. Đánh giá học phần: Đánh giá quá trình: 20%, Thi thực hành: 30%, Thi cuối kỳ: 50%.",
+    "learning_resources": "8. Giáo trình và tài liệu tham khảo: Giáo trình Kỹ thuật lập trình C - ĐH Sài Gòn; C How to Program (Deitel).",
+    "teaching_schedule": "9. Kế hoạch giảng dạy chi tiết: Phân bổ 15 tuần học theo quy định.",
+    "course_policies": "10. Yêu cầu học phần: Tham dự tối thiểu 80% số tiết, không sao chép mã nguồn."
+  },
+  "missing_sections": [],
+  "model_version": "v0.1-mock"
+}

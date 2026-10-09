@@ -1,0 +1,71 @@
+[
+  {
+    "clo_id": "CLO1",
+    "text": "Trình bày được các khái niệm cơ bản về thuật toán và kiểu dữ liệu cơ sở.",
+    "bloom_level": 2,
+    "bloom_name": "Hiểu (Understand)",
+    "confidence": 0.92,
+    "probabilities": {
+      "0": 0.01,
+      "1": 0.05,
+      "2": 0.92,
+      "3": 0.01,
+      "4": 0.01,
+      "5": 0.0,
+      "6": 0.0
+    },
+    "model_version": "v0.1-mock"
+  },
+  {
+    "clo_id": "CLO2",
+    "text": "Cài đặt và áp dụng thuật toán tìm kiếm nhị phân vào bài toán sắp xếp dữ liệu thực tế.",
+    "bloom_level": 3,
+    "bloom_name": "Áp dụng (Apply)",
+    "confidence": 0.89,
+    "probabilities": {
+      "0": 0.01,
+      "1": 0.01,
+      "2": 0.04,
+      "3": 0.89,
+      "4": 0.04,
+      "5": 0.01,
+      "6": 0.0
+    },
+    "model_version": "v0.1-mock"
+  },
+  {
+    "clo_id": "CLO3",
+    "text": "Phân tích độ phức tạp thời gian và không gian của các giải thuật đệ quy.",
+    "bloom_level": 4,
+    "bloom_name": "Phân tích (Analyze)",
+    "confidence": 0.87,
+    "probabilities": {
+      "0": 0.01,
+      "1": 0.01,
+      "2": 0.02,
+      "3": 0.06,
+      "4": 0.87,
+      "5": 0.02,
+      "6": 0.01
+    },
+    "model_version": "v0.1-mock"
+  },
+  {
+    "clo_id": "CLO4",
+    "text": "Thiết kế và xây dựng hệ thống phần mềm hướng đối tượng hoàn chỉnh.",
+    "bloom_level": 6,
+    "bloom_name": "Sáng tạo (Create)",
+    "confidence": 0.84,
+    "probabilities": {
+      "0": 0.01,
+      "1": 0.01,
+      "2": 0.02,
+      "3": 0.04,
+      "4": 0.05,
+      "5": 0.03,
+      "6": 0.84
+    },
+    "model_version": "v0.1-mock"
+  }
+]
+
