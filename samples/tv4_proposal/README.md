@@ -1,5 +1,8 @@
 # Ví dụ API để TV3 review
 
+App triển khai ngày 09/10 dùng API PR #69 và các mẫu ở samples/ cấp trên;
+không đọc các ví dụ đề xuất trong thư mục này.
+
 Trạng thái DRAFT ngày 07/10/2026. JSON là dữ liệu giả, không phải schema đã chốt,
 không phải dữ liệu đề cương thật và không dùng để gán nhãn hoặc đánh giá.
 Mã MOCK001/MOCK002 cố ý không dùng mã môn thật.

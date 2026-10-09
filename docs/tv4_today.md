@@ -1,5 +1,8 @@
 # TV4 – Công việc ngày 07/10/2026
 
+> Đây là nhật ký ngày 07/10. Tiến độ mới ngày 09/10 (app chạy + câu hỏi nháp)
+> ở [tv4_milestone1.md](tv4_milestone1.md).
+
 ## Sản phẩm
 
 - Bản phác 3 tab: `docs/wireframes/01-hoi-dap.png`, `02-lo-trinh.png`,

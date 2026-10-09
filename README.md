@@ -82,3 +82,50 @@ curl -X POST http://127.0.0.1:8000/api/v1/learning-path \
 ```bash
 pytest tests/ -v
 ```
+
+## Chạy app TV4 (Streamlit, Mốc 1)
+
+Sau khi cài `requirements.txt`, mở hai terminal tại thư mục gốc dự án.
+Trên Windows PowerShell:
+
+```powershell
+# Terminal 1: backend mock TV3
+.\.venv\Scripts\python.exe -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
+
+```powershell
+# Terminal 2: app TV4
+$env:API_URL = "http://localhost:8000"
+.\.venv\Scripts\python.exe -m streamlit run app/app.py --server.address 127.0.0.1
+```
+
+Mở http://localhost:8501. `API_URL` là gốc server, **không kèm /api/v1**;
+app tự thêm tiền tố cho endpoint nghiệp vụ. Có thể đặt biến này trong `.env`
+ở thư mục gốc; biến môi trường đã đặt được ưu tiên. Không cần khóa Gemini/Groq
+để chạy mock. Trên macOS/Linux dùng `.venv/bin/python` và `export API_URL=...`.
+
+- Hỏi đáp: chọn một trong 3 môn mẫu hoặc tất cả, gửi câu hỏi, xem nguồn và đoạn trích.
+- Lộ trình: chọn môn đích và môn đã học không trùng nhau, xem kế hoạch mẫu.
+- Phân tích: upload PDF thật có mã 841020, 841108 hoặc 841401 trong tên, tối đa 10 MB.
+  Ví dụ `data/raw/841020.pdf`; nếu chưa có dữ liệu, tải từ
+  [danh sách nguồn](docs/tv4_selected_syllabi.md). Không đổi tên PDF môn khác chỉ để khớp mock.
+- Sidebar có nút kiểm tra API. Tắt backend để thử lỗi kết nối; input vẫn được giữ.
+
+### Giới hạn của bản thử nghiệm
+
+Backend chưa OCR hay chạy mô hình thật; lộ trình là fixture cố định. App luôn
+hiển thị nhãn mock và chặn PDF có mã chưa hỗ trợ để tránh fallback sai môn.
+Schema TV3 mục 6–10 đang chờ thống nhất: app sắp theo ý nghĩa trường về thứ tự
+SGU, giữ nguyên nội dung nguồn và báo mục Phụ trách chưa được API cung cấp.
+Trường chưa có dữ liệu không được tự coi là mục thiếu trong PDF.
+
+32 câu hỏi nháp nằm trong [docs/question_ideas.md](docs/question_ideas.md).
+Checklist và các điểm chờ nhóm xác nhận: [docs/tv4_milestone1.md](docs/tv4_milestone1.md).
+
+Kiểm thử riêng TV4 (tự bật/tắt một API test ở cổng trống; không cần API chạy sẵn):
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/test_tv4_app.py -q
+```
+
+Các kiểm thử giao diện dùng [Streamlit AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest).

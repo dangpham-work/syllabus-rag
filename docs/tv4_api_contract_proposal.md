@@ -2,6 +2,9 @@
 
 Ngày: 07/10/2026. Trạng thái: **DRAFT – chưa được TV3/TV1 xác nhận**.
 
+> Cập nhật 09/10: đây là bản đề xuất lịch sử. App TV4 hiện tích hợp theo API PR #69;
+> xem hợp đồng đang dùng và các điểm chờ chốt tại [tv4_milestone1.md](tv4_milestone1.md).
+
 Căn cứ: Bảng 5.1, mục 5.2 đề cương; nhiệm vụ tuần 1 trong checklist 5 tuần.
 Tên endpoint và các trường cấp cao theo đề cương. Cấu trúc lồng nhau, giới hạn,
 quy ước lỗi dưới đây là đề xuất để hai bên thống nhất, chưa phải schema chính thức.

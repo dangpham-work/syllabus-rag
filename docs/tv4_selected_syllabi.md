@@ -2,9 +2,9 @@
 
 Ngày tải: 07/10/2026. Nguồn: [Drive nhóm](https://drive.google.com/drive/folders/156D2JvJ0WkuZ6eqOf86Jguii1v3OYR50).
 
-Đã tải 10 PDF khác nhau (SHA256 không trùng), mở được và render được toàn bộ 86 trang. Đã xem trang đầu của từng PDF để đối chiếu tên, mã và khối kiến thức; chưa đánh dấu đã đọc hết 10 đề cương. Các trang đầu thể hiện mẫu ban hành năm 2020.
+Đã tải 10 PDF khác nhau (SHA256 không trùng), mở được và render được toàn bộ 86 trang. Đã xem trang đầu của từng PDF để đối chiếu tên, mã và khối kiến thức; ngày 09/10 đã đọc lướt 40 trang chọn lọc (trang 1, 2 và hai trang cuối mỗi PDF), không phải đọc kỹ toàn bộ 86 trang. Các trang đầu thể hiện mẫu ban hành năm 2020.
 
-Bộ chọn phủ 4 khối được đánh dấu trong tài liệu: 2 đại cương, 2 cơ sở ngành, 3 ngành, 1 chuyên ngành. Hai môn còn lại chưa có ô khối đánh dấu rõ; không tự suy diễn khối từ tên môn.
+Bộ chọn phủ 4 khối được đánh dấu trong tài liệu: 2 đại cương, 2 cơ sở ngành, 4 ngành, 2 chuyên ngành. Ngày 09/10 đọc lại ảnh rõ hơn đã xác nhận Thực tập tốt nghiệp thuộc khối ngành và Thiết kế giao diện thuộc khối chuyên ngành; sửa ghi chú chưa xác định ngày 07/10.
 
 | Mã trong tên tệp | Môn | Khối theo trang 1 | Trang | PDF local | Nguồn |
 |---|---|---|---:|---|---|
@@ -16,18 +16,18 @@ Bộ chọn phủ 4 khối được đánh dấu trong tài liệu: 2 đại cư
 | 841109 | Cơ sở dữ liệu | Ngành | 10 | [Mở PDF](../data/raw/841109.pdf) | [Drive](https://drive.google.com/file/d/15K7niJY1mbYLlZUeIYinmbWLob6YcVZR/view) |
 | 841408 | Kiểm thử phần mềm | Chuyên ngành | 6 | [Mở PDF](../data/raw/841408.pdf) | [Drive](https://drive.google.com/file/d/15EvkSXdBoIEsq2Y_26MFoV7iH1cAuWO4/view) |
 | 841047 | Công nghệ phần mềm | Ngành | 8 | [Mở PDF](../data/raw/841047.pdf) | [Drive](https://drive.google.com/file/d/15FBNuFM_eKvT9SDeLv5UB8rnPIgB6MPV/view) |
-| 841070 | Thực tập tốt nghiệp | Chưa xác định: ô khối không được đánh dấu rõ | 8 | [Mở PDF](../data/raw/841070.pdf) | [Drive](https://drive.google.com/file/d/15G42quStmExZHudtzPiRTdbi-rcJgx3Q/view) |
-| 841481 | Thiết kế giao diện | Chưa xác định: ô khối không được đánh dấu rõ | 8 | [Mở PDF](../data/raw/841481.pdf) | [Drive](https://drive.google.com/file/d/15A4GxuFi9xfuDpGZG_v6Wra0qV5BBEau/view) |
+| 841070 | Thực tập tốt nghiệp | Ngành | 8 | [Mở PDF](../data/raw/841070.pdf) | [Drive](https://drive.google.com/file/d/15G42quStmExZHudtzPiRTdbi-rcJgx3Q/view) |
+| 841481 | Thiết kế giao diện | Chuyên ngành | 8 | [Mở PDF](../data/raw/841481.pdf) | [Drive](https://drive.google.com/file/d/15A4GxuFi9xfuDpGZG_v6Wra0qV5BBEau/view) |
 
 ## Điểm cần TV2 kiểm tra
 
 - Mạng máy tính: tên tệp ghi **841404**, nhưng mã học phần trên trang 1 là **841104**. Giữ tên lưu theo mã nguồn để dễ truy vết, chưa dùng mã này làm khóa chuẩn cho API hay JSON.
-- Thực tập tốt nghiệp và Thiết kế giao diện: chưa thấy ô khối kiến thức được đánh dấu rõ trên trang 1; đối chiếu DanhMuc/CTĐT trước khi điền khối chính thức.
+- Khối của Thực tập tốt nghiệp và Thiết kế giao diện đã xác nhận lại ngày 09/10 theo ô đánh dấu trang 1.
 - Các thuật ngữ “học phần học trước” và “học phần tiên quyết” khác nhau trong mẫu. Giữ nguyên thuật ngữ khi ghi chú, không tự chuyển tất cả thành cạnh tiên quyết cứng.
 
 ## Bàn giao và bước đọc tiếp
 
 - Inventory đầy đủ (nguồn, mã theo tên file và theo nội dung, số trang, SHA256): `data/raw/tv4_inventory.csv`.
 - PDF và CSV nằm dưới data/raw/ nên được .gitignore loại khỏi Git; bản danh sách này có thể đưa vào PR.
-- Tiếp theo đọc các mục 1, 2, 4, 5, 6, 9, ghi ý tưởng câu hỏi kèm trang. Việc tạo ≥30 câu hỏi và đọc lướt toàn bộ nội dung chưa được đánh dấu hoàn thành trong đợt lấy tài liệu này.
+- Đã soạn 32 câu hỏi nháp có trang/mục nguồn tại [question_ideas.md](question_ideas.md) ngày 09/10; chờ duyệt chéo trước khi dùng làm bộ gold.
 - Không OCR lại toàn bộ trong phần việc TV4; phối hợp nhận OCR từ TV2 khi sẵn sàng.
