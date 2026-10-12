@@ -1,0 +1,38 @@
+UBND THÀNH PHỐ HỒ CHÍ MINH
+TRƯỜNG ĐẠI HỌC SÀI GÒN
+ĐỀ CƯƠNG CHI TIẾT HỌC PHẦN
+NGÀNH ĐÀO TẠO: CÔNG NGHỆ THÔNG TIN, KỸ THUẬT PHẦN MỀM
+HỌC PHẦN
+QUẢN TRỊ MẠNG
+(Ban hành kèm theo Quyết định số 2058/QĐ-ĐHSG ngày 08 tháng 09 năm 2020 của Hiệu trưởng Trường Đại học Sài Gòn)
+1. Thông tin tổng quát về học phần:
+- Tên học phần (tiếng Việt): Quản trị mạng
+(tiếng Anh): Network administration
+- Mã số học phần: 841411
+- Thuộc khối kiến thức/kỹ năng:
+Kiến thức giáo dục đại cương
+Kiến thức ngành
+Kiến thức cơ sở ngành
+Kiến thức chuyên ngành (nếu có)
+- Số tín chỉ:
+3
++ Số tiết lý thuyết:
+45
++ Số tiết thảo luận/bài tập:
+0
++ Số tiết thực hành:
+30
++ Số tiết hoạt động nhóm:
+0
++ Số tiết tự học:
+0
+- Học phần tiên quyết:
+Mạng máy tính
+- Học phần song hành (nếu có):
+Không
+2. Mô tả học phần (Vị trí, vai trò của học phần đối với chương trình đào tạo và khái quát những nội dung chính)
+Học phần được giảng dạy cho sinh viên chuyên ngành mạng máy tính.
+Môn học cung cấp cho sinh viên kiến thức và kỹ năng về quản lý mạng máy tính bao gồm kiến thức về mô hình quản lý trên domain, cũng như kiến thức và kỹ năng về các công cụ và ứng dụng quản lý mạng thường gặp. Sinh viên sẽ được làm quen và thực hành sử dụng một số công cụ quản lý mạng máy tính sử dụng hệ điều hành mạng thông dụng như Windows và Linux. Trang bị cho sinh viên những kiến thức và kỹ năng chuyên về cài đặt và quản trị hệ thống mạng để đáp ứng với nhu cầu ứng dụng của doanh nghiệp, trường học, tổ chức.
+3. Mục tiêu học phần
+Học phần giúp sinh viên đạt được những mục tiêu sau:
+Về kiến thức:

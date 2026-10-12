@@ -1,0 +1,26 @@
+5. Nội dung chi tiết học phần
+CHƯƠNG 1 TỔNG QUAN VỀ LINUX
+1.1. Giới thiệu hệ điều hành mã nguồn mở Linux
+1.2. Các đặc điểm cơ bản của Linux
+1.3. Kiến trúc Linux
+1.4. Ưu và nhược điểm của Linux
+CHƯƠNG 2 QUÁ TRÌNH KHỞI ĐỘNG CỦA LINUX
+2.1. Tìm hiểu quá trình khởi động của Linux
+2.2. LILO và GRUB
+2.3. Runlevels
+CHƯƠNG 3 LỆNH VÀ TIỆN ÍCH TRÊN LINUX
+3.1. Lệnh trên Linux
+3.1.1. Các lệnh trên tập tin
+3.1.2. Các lệnh trên thư mục
+3.1.3. Nén và giải nén
+3.2. Tiện ích trên Linux
+3.2.1. Kênh chuẩn trên Linux
+3.2.2. Tiện ích soạn thảo/email
+CHƯƠNG 4 QUẢN TRỊ NGƯỜI DÙNG VÀ NHÓM NGƯỜI DÙNG
+4.1. Giới thiệu Người dùng và Nhóm người dùng trên Linux
+4.2. Quản trị người dùng và nhóm người dùng bằng dòng lệnh
+CHƯƠNG 5 LINUX FILESYSTEMS
+5.1. Các khái niệm cơ bản về Filesystems
+5.2. Các thao tác trên Filesystems
+5.2.1. Định dạng Filesystems
+5.2.2. Xem thông tin Filesystems

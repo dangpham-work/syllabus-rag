@@ -1,0 +1,34 @@
+Cung cấp kiến thức nền tảng về quản trị hệ thống mạng trên môi trường Linux và Windows.
+Cung cấp các kiến thức về các dịch vụ trên hệ thống mạng.
+Cung cấp các kiến thức về thiết lập an toàn trên hệ thống mạng.
+Về kỹ năng:
+Theo dõi hệ thống mạng.
+Thiếp lập các dịch vụ mạng.
+Quản trị các dịch vụ mạng.
+Về thái độ: Sinh viên phải có thái độ học tập nghiêm túc, chăm chỉ, sáng tạo.
+4. Chuẩn đầu ra học phần
+Ký hiệu chuẩn đầu ra (1)
+Mô tả chuẩn đầu ra (2)
+Trình độ năng lực (3)
+G1
+Trình bày các mô hình, hệ điều hành quản lý mạng.
+Định nghĩa Active Directory, web server, mail server, FTP server, SNMP, network load balancing, system log.
+1
+G2
+Xác định hoạt động của người quản trị.
+Xác định nhiệm vụ của Domain Controller, Backup Domain Controller, Child Domain.
+Xác định các loại tập tin trên Linux, Windows.
+Xác định các giao thức trong mail, web server.
+Xác định các cách thức lập lịch.
+2
+G3
+Phân biệt các thành phần cơ bản trong quản trị mạng.
+Phân tích các dịch vụ DNS, DHCP.
+Phân biệt các loại tài khoản trong Active Directory.
+Phân tích các chính sách nhóm.
+Phân tích các mô hình triển khai SNMP, load balancing.
+4
+G4
+Áp dụng cấu hình các dịch vụ trong quản lý hệ thống.
+Áp dụng cấu hình triển khai các mô hình trong hệ thống mạng.
+3

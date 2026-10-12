@@ -1,0 +1,29 @@
+11
+7.3. Các lệnh kiểm tra điều kiện
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả các lệnh kiểm tra điều kiện trong lập trình Shell.
+- Áp dụng lập trình Shell trên Linux.
+G3; G5
+12
+7.4. Cấu trúc điều khiển trong Shell
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả cấu trúc điều khiển trong Shell.
+- Áp dụng lập trình Shell trên Linux.
+G3; G5
+13
+CHƯƠNG 8 LẬP TRÌNH SHELL NÂNG CAO
+8.1. Lập trình trên mảng
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả cách thức xử lý mảng trong lập trình Shell.
+- Áp dụng lập trình Shell trên Linux.
+G3; G5
+14
+8.2. Lập trình trên file
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả cách thức xử lý file trong lập trình Shell.
+- Áp dụng lập trình Shell trên Linux.
+G3; G5

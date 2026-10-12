@@ -1,0 +1,46 @@
+7. Hướng dẫn tổ chức dạy học
+Tuần/ Buổi học
+Nội dung dạy học
+Hình thức tổ chức dạy học
+Yêu cầu đối với sinh viên
+CĐR môn học
+1,2
+CHƯƠNG 1. TỔNG QUAN VỀ TƯƠNG TÁC NGƯỜI – MÁY
+1.1. Tổng quan
+1.2. Các nguyên tắc thiết kế tương tác cơ bản
+1.3 Quy trình
+Giảng, thảo luận, hướng dẫn thực hành
+Nghe giảng, thảo luận, làm bài tập
+G1,2,5
+3,4,5,6
+CHƯƠNG 2. THIẾT KẾ TRỰC QUAN KHẢ DỤNG
+2.1. Thiết kế điều hướng và thiết kế menu
+2.2. Thiết kế cho SEO
+Giảng, thảo luận, hướng dẫn thực hành
+Nghe giảng, thảo luận, làm bài tập
+G1,2,5
+7,8,9
+CHƯƠNG 3. THIẾT KẾ WEBPAGES ĐỘNG
+3.1. Ajax
+3.2. SEO
+3.3. Kim tự tháp ngược & cấu trúc trực quan
+3.4 Readability và Legibility
+Giảng, thảo luận, hướng dẫn thực hành
+Nghe giảng, thảo luận, làm bài tập
+G1,2,5
+10,11,12
+CHƯƠNG 4. AGILE UX
+4.1. Users, Personas & Design Maps
+4.2. Use Cases, Stories & Scenarios
+4.3.Mô hình khái niệm
+Giảng, thảo luận, hướng dẫn thực hành và đồ án
+Nghe giảng, thảo luận, làm bài tập và đồ án
+G1,2,3,4,5
+13,14,15
+Báo cáo kết quả đồ án
+Chấm đồ án
+Báo cáo kết quả
+G2,3,4,5
+8. Quy định đối với môn học và yêu cầu của giảng viên (những yêu cầu khác đối với môn học (nếu có), phù hợp với các quy chế đào tạo hiện hành)
+- Phòng học: mát, yên tĩnh, đủ chỗ ngồi
+- Phương tiện phục vụ giảng dạy: micro, projector.

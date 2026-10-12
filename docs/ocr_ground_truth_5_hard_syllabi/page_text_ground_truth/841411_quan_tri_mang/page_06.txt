@@ -1,0 +1,28 @@
+1
+1.5. Các thành phần cơ bản của quản trị mạng.
+3 tiết lý thuyết + 2 tiết thực hành.
+Trình bày các mô hình, các hệ điều hành quản trị mạng.
+Xác định các hoạt động của người quản trị mạng.
+Phân biệt các thành phần cơ bản của quản trị mạng.
+G1
+G2
+G3
+2
+CHƯƠNG 2 QUẢN LÝ DỊCH VỤ DNS VÀ DHCP
+2.1. DNS.
+2.1.1. Các khái niệm.
+2.1.2. Cơ chế phân giải tên sang địa chỉ và ngược lại.
+2.1.3. Thiết lập DNS Server.
+2.1.4. Quản lý DNS Server.
+2.1.5. nslookup và whois.
+2.2. DHCP.
+2.2.1. Các khái niệm.
+2.2.2. Hoạt động của dịch vụ DHCP.
+2.2.3. Cài đặt dịch vụ DHCP.
+2.2.4. Chứng thực dịch vụ DHCP trong Active Directory.
+2.2.5. Cấu hình dịch vụ DHCP.
+3 tiết lý thuyết + 2 tiết thực hành.
+Phân tích các dịch vụ DNS, DHCP.
+Áp dụng cài đặt dịch vụ DNS, DHCP trong quản lý hệ thống mạng.
+G3
+G4

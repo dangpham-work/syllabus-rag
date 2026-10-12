@@ -1,0 +1,38 @@
+6.2.2. Giới thiệu giao thức SNMP.
+6.2.3. Mô hình SNMP.
+6.2.4. Triển khai SNMP.
+CHƯƠNG 7: QUẢN LÝ SYSTEM LOG VÀ LẬP LỊCH
+7.1. Quản lý system log.
+7.1.1. Định nghĩa system log.
+7.1.2. Cấu hình system log.
+7.1.3. Quản lý system log.
+7.2. Lập lịch
+7.2.1. Lập lịch sao lưu dự phòng hệ thống.
+7.2.2. Lập lịch đồng bộ hóa dữ liệu.
+7.2.3. Lập lịch để nâng cấp hệ thống.
+6. Học liệu
+6.1. Tài liệu bắt buộc (không quá 3 tài liệu)
+[1] Mark G. Sobell, A Practical Guide to Fedora and Red Hat Enterprise Linux, Prentice Hall, 2011.
+6.2. Tài liệu tham khảo
+[2] Christopher Negus , Fedora® 11 and Red Hat® Enterprise Linux® Bible, Wiley Publishing, 2009.
+[3] Andrew S.Tanenbaum, Computer Netwrok, Prentice Hall, 2003.
+7. Hướng dẫn tổ chức dạy học
+Tuần/ Buổi học
+Nội dung dạy học
+Hình thức tổ chức dạy học
+Yêu cầu đối với sinh viên
+CĐR môn học
+CHƯƠNG 1 TỔNG QUAN VỀ QUẢN TRỊ MẠNG
+1.1. Giới thiệu chung.
+1.2. Các mô hình quản trị mạng.
+1.2.1. Mô hình Workgroup.
+1.2.2. Mô hình Domain.
+1.3. Các hệ điều hành quản trị mạng.
+1.4. Hoạt động của người quản trị mạng.
+3 tiết lý thuyết + 2 tiết thực hành.
+Trình bày các mô hình, các hệ điều hành quản trị mạng.
+Xác định các hoạt động của người quản trị mạng.
+Phân biệt các thành phần cơ bản của quản trị mạng.
+G1
+G2
+G3

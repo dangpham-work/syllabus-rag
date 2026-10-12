@@ -1,0 +1,44 @@
+5
+2.2. Vi phân của hàm số
+2.2.1. Khái niệm vi phân.
+2.2.2. Liên hệ giữa đạo hàm và vi phân.
+2.2.3. Tính bất biến của biểu thức vi phân.
+2 tiết lý thuyết + 1 tiết bài tập.
+Làm bài tập được giao trong [1]
+G3, G9
+6
+2.4. Công thức Taylor
+2.4.1. Công thức Taylor, Maclaurin.
+2.5. Ứng dụng đạo hàm trong toán học
+2.5.1. Quy tắc L'hospital.
+2 tiết lý thuyết + 1 tiết bài tập.
+Làm bài tập được giao trong [1]
+G14, G15
+7
+2.5.2. Xấp xỉ tuyến tính.
+2.5.3. Khảo sát hàm số cho bởi phương trình tham số.
+2.5.4. Khảo sát hàm số trong tọa độ cực.
+2 tiết lý thuyết + 1 tiết bài tập.
+Làm bài tập được giao trong [1]
+G15
+8
+CHƯƠNG 3. TÍCH PHÂN
+3.1. Nguyên hàm
+3.1.1. Nguyên hàm.
+3.1.2. Tích phân bất định.
+3.1.3. Các công thức tích phân cơ bản.
+3.2. Tích phân xác định
+3.2.1. Khái niệm tích phân xác định.
+3.2.2. Điều kiện khả tích.
+3.3.3. Các tính chất cơ bản.
+3.3.4. Đạo hàm theo cận.
+3 tiết lý thuyết.
+Đọc trước lí thuyết về tích phân trong chương 3.
+G4
+9
+3.3. Một số phương pháp tính tích phân
+3.3.1. Phương pháp đổi biến.
+3.3.2. Phương pháp tích phân từng phần.
+1 tiết lý thuyết + 2 tiết bài tập.
+Làm bài tập được giao trong [2]
+G10

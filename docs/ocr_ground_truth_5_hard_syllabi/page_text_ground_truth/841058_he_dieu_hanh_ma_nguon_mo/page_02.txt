@@ -1,0 +1,31 @@
+Sinh viên hiểu đặc trưng nổi bật của hệ điều hành GNU/Linux so với Windows, tiềm năng phát triển và vị thế trên thương trường cũng như trong ứng dụng.
+Ngoài ra, sinh viên có thể sử dụng thành thạo hệ điều hành Linux bằng công cụ đồ họa và dòng lệnh với các thao tác trên tập tin, thư mục, quản lý người dùng, soạn thảo bằng các tiện ích.
+Về kỹ năng: Sinh viên sẽ có các kỹ năng sau đây khi làm việc với hệ điều hành mã nguồn mở:
+Quản trị người dùng và các kỹ năng cơ bản trong việc bảo mật hệ thống
+Cài đặt nâng cấp các phần mềm trong Linux.
+Cấu hình kết nối mạng thông qua các tập tin hoặc cửa sổ đồ họa.
+Ứng dụng lập trình Shell cho công việc quản trị.
+Hiểu được các công cụ lập trình giao diện trên môi trường Linux
+Về thái độ: Sinh viên có thái độ học tập chăm chỉ, nghiêm túc và sáng tạo.
+4. Chuẩn đầu ra học phần
+Ký hiệu chuẩn đầu ra (1)
+Mô tả chuẩn đầu ra (2)
+Trình độ năng lực (3)
+G1
+Trình bày đặc điểm của hệ điều hành mã nguồn mở, loại người dùng, nhóm người dùng trên Linux và các khái niệm file systems.
+2
+G2
+Mô tả kiến trúc, ưu, nhược điểm của Linux, quá trình khởi động, các lệnh và các tiện ích của Linux.
+2
+G3
+Mô tả các loại Shell, tham biến Shell, cấu trúc điều khiển, các thức xử lý mảng, file, lập trình trong quản lý hệ thống trong Shell.
+2
+G4
+Áp dụng cài đặt hệ điều hành Linux; thực hiện lệnh, sử dụng tiện ích, quản lý người dùng, nhóm quản lý file systems trên Linux.
+3
+G5
+Áp dụng lập trình Shell trong Linux.
+3
+G6
+Phân biệt LILO và GRUB; phần mềm đóng gói và không đóng gói.
+4

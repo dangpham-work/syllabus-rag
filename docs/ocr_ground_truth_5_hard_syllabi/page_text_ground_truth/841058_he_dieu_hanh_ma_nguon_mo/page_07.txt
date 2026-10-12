@@ -1,0 +1,27 @@
+8
+5.2.2. Xem thông tin Filesystems
+5.2.3. Gắn kết Filesystems
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Trình bày các khái niệm cơ bản của file systems.
+- Áp dụng các thao tác của file systems trên Linux.
+G1; G4
+9
+CHƯƠNG 6 CÀI ĐẶT PHẦN MỀM TRÊN LINUX
+6.1. Giới thiệu về phần mềm đóng gói
+6.2. Cách cài đặt các phần mềm đóng gói
+6.3. Giới thiệu và cài đặt phần mềm không đóng gói.
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Phân biệt phần mềm đóng gói và không đóng gói trên Linux.
+- Áp dụng cài đặt phần mềm trên Linux.
+G4; G6
+10
+CHƯƠNG 7 LẬP TRÌNH SHELL CƠ BẢN
+7.1. Các loại Shell trong Linux
+7.2. Tham biến Shell
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả các loại Shell, tham biến Shell trong Linux.
+- Áp dụng lập trình Shell trên Linux.
+G3; G5

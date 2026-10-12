@@ -1,0 +1,24 @@
+Chương 5. Java Bean
+5.1. Giới thiệu
+5.2. Phương pháp
+5.3. Ứng dụng
+bài tập chương 5
+Chương 6. Các Chuyên đề
+Giảng viên tự đề xuất các chuyên đề phù hợp tùy theo xu hướng hiện tại, sau đây là các gợi ý:
+6.1. Chuyên đề 1: Spring
+6.2. Chuyên đề 2: Hibernate
+6.3. Chuyên đề 3: Strut
+6.4. Chuyên đề 5: Web service
+6.5. Chuyên đề 6: Java và Machine Learning
+Bài tập chương 6
+Hướng dẫn thực hiện đồ án và chấm đồ án
+Đề tài: xây dựng ứng dụng web quản lý bán hàng, ...
+Ôn tập thi lý thuyết
+6. Học liệu
+6.1. Tài liệu bắt buộc (không quá 3 tài liệu)
+[1] Luciano Manelli, Giulio Zambon, "Beginning Jakarta EE Web Development_ Using JSP, JSF, MySQL, and Apache Tomcat for Building Java Web Applications", Apress, 2020.
+6.2. Tài liệu tham khảo
+[2] Oracle, "Java™ Platform, Enterprise Edition (Java EE) Specification", Release 8, 2019.
+[3] Bruce W. Perry, "Java Servlet & JSP Cookbook", O'Reilly Media, 2003.
+[4] Joel Murach, Michael Urban, "Murach's Java Servlets and JSP", Mike Murach & Associates, 2014.
+[5] Doug Lowe, "Java All-in-One For Dummies 6th edition", John Wiley & Sons, 2020.

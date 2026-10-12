@@ -1,0 +1,33 @@
+3
+CHƯƠNG 3 QUẢN LÝ ACTIVE DIRECTORY
+3.1. Khái niệm Active Directory
+3.1.1. Active Directory là gì?
+3.1.2. Cấu trúc của Active Directory.
+3.2. Cài đặt và cấu hình Domain Controller.
+3.2.1. Giới thiệu nhiệm vụ Domain Controller.
+3.2.2. Cấu hình Domain Controller.
+3 tiết lý thuyết + 2 tiết thực hành.
+Định nghĩa Active Directory.
+Xác định nhiệm vụ của domain controller.
+Áp dụng cài đặt dịch vụ DNS, DHCP, Domain controller trong quản lý hệ thống mạng.
+G1
+G2
+G4
+4
+3.3. Quản lý tài khoản trên Active Directory.
+3.3.1. Giới thiệu tài khoản người dùng, group, OU.
+3.3.2. Tạo và quản lý OU.
+3.3.3. Tạo và quản lý tài khoản người dùng.
+3.3.4. Tạo và quản lý tài khoản nhóm (group).
+3.3.5. Quản lý chính sách tài khoản người dung.
+3.3.6. Quản lý user profile.
+3.4. Cài đặt và cấu hình Backup Domain Controller.
+3.4.1. Giới thiệu Backup Domain Controller.
+3.4.2. Cài đặt và cấu hình Backup Domain Controller.
+3 tiết lý thuyết + 2 tiết thực hành.
+Phân biệt các loại tài khoản trong Active Directory.
+Xác định nhiệm vụ của Backup Domain Controller.
+Áp dụng cấu hình Domain Controller, quản lý account, cấu hình Backup Domain Controller.
+G2
+G3
+G4

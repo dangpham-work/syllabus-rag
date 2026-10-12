@@ -1,0 +1,39 @@
+ỦY BAN NHÂN DÂN
+THÀNH PHỐ HỒ CHÍ MINH
+TRƯỜNG ĐẠI HỌC SÀI GÒN
+ĐỀ CƯƠNG CHI TIẾT HỌC PHẦN
+NGÀNH ĐÀO TẠO: CÔNG NGHỆ THÔNG TIN, KỸ THUẬT PHẦN MỀM.
+HỌC PHẦN
+GIẢI TÍCH 1
+(Ban hành kèm theo Quyết định số 2058/QĐ-ĐHSG ngày 8 tháng 9 năm 2020 của Hiệu trưởng Trường Đại học Sài Gòn)
+1. Thông tin tổng quát về học phần:
+- Tên học phần (tiếng Việt): Giải tích 1
+(tiếng Anh): Analysis 1
+- Mã số học phần: 841401
+- Thuộc khối kiến thức/ kỹ năng:
+Kiến thức giáo dục đại cương
+Kiến thức ngành
+Kiến thức cơ sở của ngành
+Kiến thức chuyên ngành (nếu có)
+- Số tín chỉ:
+03
++ Số tiết lý thuyết:
+30
++ Số tiết thảo luận/bài tập:
+15
++ Số tiết thực hành:
+0
++ Số tiết hoạt động nhóm:
+0
++ Số tiết tự học:
+90
+- Học phần tiên quyết:
+Không
+- Học phần song hành (nếu có):
+Không
+2. Mô tả học phần (Vị trí, vai trò của học phần đối với chương trình đào tạo và khái quát những nội dung chính)
+Học phần Giải tích 1 cung cấp các kiến thức cơ bản về giới hạn, liên tục, phép tính vi tích phân của hàm một biến, chuỗi số, chuỗi hàm. Đây là những kiến thức quan trọng cần thiết cho sinh viên các ngành vật lý, kỹ thuật, ...để có thể hiểu và giải quyết các vấn đề chuyên ngành.
+3. Mục tiêu học phần
+Học phần giúp sinh viên đạt được những mục tiêu sau:
+Về kiến thức: Nắm được các khái niệm về: Dãy số, hàm số, giới hạn, liên tục, đạo hàm, tích phân của hàm số, chuỗi số, chuỗi hàm số.
+Về kỹ năng: -Thực hiện thành thạo các kĩ năng tính toán và chứng minh.

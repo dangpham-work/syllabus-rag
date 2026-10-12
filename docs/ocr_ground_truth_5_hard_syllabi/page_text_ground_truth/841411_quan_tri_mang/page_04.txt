@@ -1,0 +1,38 @@
+3.4.1. Giới thiệu Backup Domain Controller.
+3.4.2. Cài đặt và cấu hình Backup Domain Controller.
+3.5. Cài đặt và cấu hình Child Domain.
+3.5.1. Giới thiệu Child Domain.
+3.5.2. Cài đặt và cấu hình Child Domain.
+CHƯƠNG 4: QUẢN LÝ Ổ ĐĨA – CHÍNH SÁCH NHÓM
+4.1. Hệ thống tập tin trên Linux và Windows.
+4.2. Quản lý ổ đĩa trên Linux.
+4.3. Quản lý ổ đĩa trên Windows.
+4.4. Quản lý giới hạn ổ đĩa (Disk Quota).
+4.5. Chính sách nhóm.
+4.5.1. Khái niệm chính sách nhóm.
+4.5.2. Cài đặt chính sách nhóm.
+4.5.3. Quản lý chính sách nhóm.
+CHƯƠNG 5: QUẢN LÝ MAIL, WEB VÀ FTP SERVER
+5.1. Quản lý mail server.
+5.1.1. Khái niệm mail server.
+5.1.2. Giao thức POP, SMTP, IMAP.
+5.1.3. Thiết lập mail server.
+5.1.4. Thiết lập mail client.
+5.1.5. Xây dựng web mail.
+5.1.6. Quản lý mail server.
+5.2. Quản lý web server.
+5.2.1. Khái niệm web server.
+5.2.2. Giao thức HTTP.
+5.2.3. Thiết lập web server.
+5.2.4. Quản lý web server.
+5.3. Quản lý FTP server.
+5.3.1. Khái niệm FTP server.
+5.3.2. Cài đặt và cấu hình FTP server.
+5.3.3. Quản lý FTP server.
+CHƯƠNG 6: NETWORK LOAD BALANCING VÀ GIÁM SÁT MẠNG
+6.1. Network load balancing.
+6.1.1. Khái niệm network load balancing.
+6.1.2. Mô hình triển khai.
+6.1.3. Triển khai network load balancing.
+6.2. Giám sát mạng.
+6.2.1. Câu lệnh để theo dõi hệ thống mạng.

@@ -1,0 +1,26 @@
+5.2.3. Gắn kết Filesystems
+CHƯƠNG 6 CÀI ĐẶT PHẦN MỀM TRÊN LINUX
+6.1. Giới thiệu về phần mềm đóng gói
+6.2. Cách cài đặt các phần mềm đóng gói
+6.3. Giới thiệu và cài đặt phần mềm không đóng gói
+CHƯƠNG 7 LẬP TRÌNH SHELL CƠ BẢN
+7.1. Các loại Shell trong Linux
+7.2. Tham biến Shell
+7.3. Các lệnh kiểm tra điều kiện
+7.4. Cấu trúc điều khiển trong Shell
+CHƯƠNG 8 LẬP TRÌNH SHELL NÂNG CAO
+8.1. Lập trình trên mảng
+8.2. Lập trình trên file
+8.3. Các bài tập lập trình dùng cho việc quản trị hệ thống
+6. Học liệu
+6.1. Tài liệu bắt buộc (không quá 3 tài liệu)
+[1] . Red Hat, Red Hat Enterprise Linux 5.0.0, Red Hat, 2007.
+6.2. Tài liệu tham khảo
+[2] Kurt Wall, Mark Watson, and Mark Whitis, Linux Programming Unleashed, Associate Publisher Sams, 2001.
+[3] Red Hat, Red Hat Enterprise Linux 6, Red Hat, 2010.
+7. Hướng dẫn tổ chức dạy học
+Tuần/ Buổi học
+Nội dung dạy học
+Hình thức tổ chức dạy học
+Yêu cầu đối với sinh viên
+CĐR môn học

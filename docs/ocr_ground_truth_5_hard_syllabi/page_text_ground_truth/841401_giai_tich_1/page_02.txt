@@ -1,0 +1,45 @@
+-Vận dụng được kiến thức để giải quyết một số bài toán.
+Về thái độ: Tích cực học tập, rèn khả năng tự học, tự đọc sách.
+4. Chuẩn đầu ra học phần
+Ký hiệu chuẩn đầu ra (1)
+Mô tả chuẩn đầu ra (2)
+Trình độ năng lực (3)
+G1
+Trình bày được khái niệm dãy số, sự hội tụ của dãy số.
+2
+G2
+Trình bày được khái niệm hàm số, sự hội tụ của hàm số, hàm số liên tục.
+2
+G3
+Trình bày được khái niệm đạo hàm, vi phân, mối liên hệ giữa đạo hàm và vi phân, đạo hàm và vi phân cấp cao.
+2
+G4
+Trình bày được định nghĩa, ví dụ tích phân bất định, tích phân xác định, hàm khả tích. Phân biệt được 2 loại trên.
+3
+G5
+Trình bày được định nghĩa, ví dụ tích phân suy rộng loại 1, 2.
+3
+G6
+Trình bày được định nghĩa, ví dụ chuỗi số, chuỗi số dương, chuỗi đan dấu, chuỗi lũy thừa, chuỗi Fourier.
+3
+G7
+Tính được giới hạn dãy số, xét được sự hội tụ của dãy số
+3.5
+G8
+Tính được giới hạn hàm số, xét được sự hội tụ của hàm số, xét được tính liên tục của hàm số.
+3.5
+G9
+Tính được đạo hàm của các hàm số, hàm ẩn, hàm ngược, đạo hàm và vi phân cấp cao.
+3.5
+G10
+Tính được tích phân bằng phương pháp đổi biến, từng phần, tích phân hàm hữu tỉ.
+3.5
+G11
+Tính và khảo sát được sự hội tụ của tích phân suy rộng.
+4
+G12
+Chứng minh được một chuỗi hội tụ hay phân kỳ. Tính được tổng một số chuỗi đơn giản nếu chuỗi hội tụ.
+4
+G13
+Thực hiện được việc khai triển một hàm thành chuỗi.
+4
