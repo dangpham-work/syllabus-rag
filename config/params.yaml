@@ -12,7 +12,7 @@ data:
 # --- OCR --------------------------------------------------------------------
 ocr:
   dpi: 300
-  engine: paddleocr             # đối chứng: tesseract (lang vie); xem docs/ocr_comparison.md
+  engine: ket_hop               # Tesseract (lang vie) đọc chữ + PaddleOCR đọc số trình độ ở trang CLO; đối chứng: tesseract, paddleocr; xem docs/ocr_comparison.md
 
 # --- M1: phân loại đoạn vào 11 lớp (10 mục + "khác") -------------------------
 m1_section:

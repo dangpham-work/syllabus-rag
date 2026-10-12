@@ -1,0 +1,35 @@
+Về kỹ năng: .
+- Thiết kế giao diện theo yêu cầu người dùng phù với với Web, mobile,.
+- Lập tài liệu phân tích thiết kế.
+Về thái độ:
+- Tuân thủ nghiêm túc các quy định trong việc học lý thuyết và thực hành.
+- Thể hiện tính kỷ luật trong làm việc nhóm.
+4. Chuẩn đầu ra học phần
+Ký hiệu chuẩn đầu ra (1)
+Mô tả chuẩn đầu ra (2)
+Trình độ năng lực (3)
+G1
+Giải thích các kiến thức trong qui trình phân tích thiết kế giao diện một cách chính xác.
+5.0
+G2
+Sử dụng các công cụ cho việc phân tích thiết kế giao diện một cách thành thạo theo Agile
+4.0
+G3
+Vận dụng phương pháp lập trình ứng dụng front-end để giải quyết bài toán trong thực tế một cách phù hợp.
+4.0
+G4
+Thực hiện làm việc nhóm một cách hiệu quả để đạt được mục tiêu đề ra khi thực hiện đồ án.
+5.0
+G5
+Thể hiện tính nghiêm túc và kỷ luật trong các hoạt động học tập của học phần.
+5.0
+5. Nội dung chi tiết học phần
+CHƯƠNG 1. TỔNG QUAN VỀ TƯƠNG TÁC NGƯỜI – MÁY
+1.1. Tổng quan
+1.2. Các nguyên tắc thiết kế tương tác cơ bản
+1.3 Quy trình
+CHƯƠNG 2. THIẾT KẾ TRỰC QUAN KHẢ DỤNG
+2.1. Thiết kế điều hướng và thiết kế menu
+2.2. Thiết kế cho SEO
+CHƯƠNG 3. THIẾT KẾ WEBPAGES ĐỘNG
+3.1. Ajax

@@ -1,0 +1,29 @@
+5
+3.5. Cài đặt và cấu hình Child Domain.
+3.5.1. Giới thiệu Child Domain.
+3.5.2. Cài đặt và cấu hình Child Domain.
+3 tiết lý thuyết + 2 tiết thực hành.
+Xác định nhiệm vụ của Child Domain.
+Áp dụng cấu hình Domain Controller, quản lý account, Backup Domain Controller, Child Domain.
+G2
+G4
+6
+CHƯƠNG 4: QUẢN LÝ Ổ ĐĨA – CHÍNH SÁCH NHÓM
+4.1. Hệ thống tập tin trên Linux và Windows.
+4.2. Quản lý ổ đĩa trên Linux.
+4.3. Quản lý ổ đĩa trên Windows.
+4.4. Quản lý giới hạn ổ đĩa (Disk Quota).
+3 tiết lý thuyết + 2 tiết thực hành.
+Xác định các loại hệ thống tập tin trên Linux, Windows.
+G2
+7
+4.5. Chính sách nhóm.
+4.5.1. Khái niệm chính sách nhóm.
+4.5.2. Cài đặt chính sách nhóm.
+4.5.3. Quản lý chính sách nhóm.
+3 tiết lý thuyết + 2 tiết thực hành.
+Phân tích các chính sách nhóm.
+Áp dụng cấu hình quản lý chính sách nhóm.
+Áp dụng cấu hình quản lý ổ đĩa trên Linux, Windows.
+G3
+G4

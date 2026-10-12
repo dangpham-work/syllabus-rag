@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Đề cương chi tiết học phần sau OCR và tách mục",
+  "description": "Hợp đồng dữ liệu của một đề cương (tầng dữ liệu TV2). Tên trường bám theo api/schemas.py (TV3) để dùng lại được: course_code, course_name, credits, prerequisites, clos, sections. Khác biệt: có thêm các trường của tầng dữ liệu (level_raw, ocr_ok, hours...) và mục 6-10 đặt đúng thứ tự đề cương thật của trường (xem sections). Các trường do mô hình điền sau (bloom_level, bloom_name, confidence) là tùy chọn.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["course_code", "course_name", "credits", "prerequisites", "clos", "sections"],
+  "properties": {
+    "course_code": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{6}$",
+      "description": "Mã học phần 6 chữ số. null nếu đề cương không ghi mã (hiện có 2 file: STT 74 và 80)."
+    },
+    "course_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Tên học phần tiếng Việt, đúng như ghi trong đề cương."
+    },
+    "course_name_en": {
+      "type": ["string", "null"],
+      "description": "Tên học phần tiếng Anh nếu có."
+    },
+    "credits": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "description": "Số tín chỉ."
+    },
+    "knowledge_block": {
+      "enum": ["dai_cuong", "co_so_nganh", "nganh", "chuyen_nganh", null],
+      "description": "Khối kiến thức được đánh dấu: dai_cuong = Kiến thức giáo dục đại cương; co_so_nganh = Kiến thức cơ sở ngành; nganh = Kiến thức ngành; chuyen_nganh = Kiến thức chuyên ngành. null nếu không đánh dấu hoặc không đọc được."
+    },
+    "hours": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Số tiết theo mục 1 của đề cương. Trường nào đề cương không ghi thì bỏ qua.",
+      "properties": {
+        "theory": {"type": "integer", "minimum": 0, "description": "Số tiết lý thuyết."},
+        "exercises": {"type": "integer", "minimum": 0, "description": "Số tiết thảo luận/bài tập."},
+        "practice": {"type": "integer", "minimum": 0, "description": "Số tiết thực hành."},
+        "group_activity": {"type": "integer", "minimum": 0, "description": "Số tiết hoạt động nhóm."},
+        "self_study": {"type": "integer", "minimum": 0, "description": "Số tiết tự học."}
+      }
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "Học phần tiên quyết: mã học phần, hoặc tên học phần nếu đề cương chỉ ghi tên. Mảng rỗng khi đề cương ghi \"Không\"."
+    },
+    "corequisites": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "Học phần song hành (nếu có). Quy ước giống prerequisites."
+    },
+    "clos": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/clo"},
+      "description": "Bảng chuẩn đầu ra học phần (mục 4), theo thứ tự trong đề cương."
+    },
+    "sections": {"$ref": "#/$defs/sections"},
+    "section_pages": {
+      "type": "object",
+      "propertyNames": {"enum": ["general_info", "course_description", "course_objectives", "course_learning_outcomes", "course_content", "learning_resources", "teaching_schedule", "course_policies", "assessment", "responsible_unit"]},
+      "additionalProperties": {"type": ["integer", "null"], "minimum": 1},
+      "description": "Trang PDF (tính từ 1) nơi mỗi mục bắt đầu, để trích dẫn nguồn. null nếu chưa biết."
+    },
+    "source_file": {
+      "type": "string",
+      "description": "Tên file PDF gốc trong data/raw/."
+    },
+    "n_pages": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Số trang của file PDF gốc."
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "verified"],
+      "properties": {
+        "method": {"enum": ["hand_filled", "ocr_pipeline"], "description": "hand_filled = điền tay từ ảnh; ocr_pipeline = sinh ra từ pipeline OCR."},
+        "verified": {"type": "boolean", "description": "Đã có người đối chiếu với ảnh gốc hay chưa."},
+        "note": {"type": "string"}
+      },
+      "description": "Dữ liệu này từ đâu ra và đã được kiểm tra chưa."
+    }
+  },
+  "$defs": {
+    "clo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clo_id", "text", "level_raw", "ocr_ok"],
+      "description": "Một chuẩn đầu ra học phần. Bốn trường bắt buộc trùng các cột của data/interim/clos_raw.csv.",
+      "properties": {
+        "clo_id": {"type": "string", "minLength": 1, "description": "Ký hiệu chuẩn đầu ra đúng như trong đề cương (ví dụ G1, G2; một số môn dùng CLO1)."},
+        "text": {"type": "string", "minLength": 1, "description": "Câu mô tả chuẩn đầu ra (phần chữ chính của ô)."},
+        "details": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "Các dòng chi tiết dưới câu chính trong cùng ô (in nghiêng ở một số đề cương). Mảng rỗng hoặc bỏ qua nếu không có."
+        },
+        "level_raw": {
+          "type": ["string", "null"],
+          "description": "Số trình độ năng lực đúng như in trong đề cương, giữ nguyên định dạng (\"2\", \"3.5\", \"5.0\", \"2,5\"). Có thể là danh sách nhiều mức cách nhau dấu phẩy (\"3,4\", \"2,3,4,5\"). null hoặc chuỗi rỗng nếu đề cương không ghi số hoặc không đọc được. Các đề cương ghi không thống nhất nên chưa quy đổi."
+        },
+        "level": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "level_raw đổi sang số, để so sánh và sắp xếp. Chưa quy đổi sang thang Bloom."
+        },
+        "page": {"type": ["integer", "null"], "minimum": 1, "description": "Trang PDF chứa CLO này."},
+        "ocr_ok": {"type": "boolean", "description": "true nếu chữ và số trình độ của CLO đã đọc đủ tin cậy; false nếu cần kiểm tra tay (ví dụ trang không ghép được số trình độ)."},
+        "bloom_level": {"type": "integer", "minimum": 0, "maximum": 6, "description": "Do mô hình M2 điền sau (0 = chưa phân loại)."},
+        "bloom_name": {"type": ["string", "null"], "description": "Do mô hình M2 điền sau."},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1, "description": "Do mô hình M2 điền sau."}
+      }
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Nội dung 10 mục của đề cương, theo đúng thứ tự trong đề cương của trường. Mỗi giá trị là chữ của mục, không gồm dòng tiêu đề. Chuỗi rỗng = có tiêu đề nhưng không có nội dung. null hoặc vắng = không tìm thấy mục.",
+      "properties": {
+        "general_info": {"type": ["string", "null"], "description": "Mục 1: Thông tin tổng quát về học phần."},
+        "course_description": {"type": ["string", "null"], "description": "Mục 2: Mô tả học phần."},
+        "course_objectives": {"type": ["string", "null"], "description": "Mục 3: Mục tiêu học phần (kiến thức, kỹ năng, thái độ)."},
+        "course_learning_outcomes": {"type": ["string", "null"], "description": "Mục 4: Chuẩn đầu ra học phần (bảng CLO ở dạng chữ; bản có cấu trúc nằm ở clos)."},
+        "course_content": {"type": ["string", "null"], "description": "Mục 5: Nội dung chi tiết học phần."},
+        "learning_resources": {"type": ["string", "null"], "description": "Mục 6: Học liệu (tài liệu bắt buộc và tham khảo). Tên khóa giữ như api/schemas.py nhưng đó là mục 8 trong bản mock của TV3."},
+        "teaching_schedule": {"type": ["string", "null"], "description": "Mục 7: Hướng dẫn tổ chức dạy học (bảng tuần/buổi, nội dung, hình thức, CĐR môn học). Đó là mục 9 trong bản mock của TV3."},
+        "course_policies": {"type": ["string", "null"], "description": "Mục 8: Quy định đối với môn học và yêu cầu của giảng viên. Đó là mục 10 trong bản mock của TV3."},
+        "assessment": {"type": ["string", "null"], "description": "Mục 9: Phương pháp đánh giá học phần. Đó là mục 7 trong bản mock của TV3."},
+        "responsible_unit": {"type": ["string", "null"], "description": "Mục 10: Phụ trách học phần (khoa/bộ môn, địa chỉ/email). Chưa có trong api/schemas.py."}
+      }
+    }
+  }
+}

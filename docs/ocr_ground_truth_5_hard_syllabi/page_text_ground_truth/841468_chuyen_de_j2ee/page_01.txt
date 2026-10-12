@@ -1,0 +1,40 @@
+UBND THÀNH PHỐ HỒ CHÍ MINH
+TRƯỜNG ĐẠI HỌC SÀI GÒN
+ĐỀ CƯƠNG CHI TIẾT HỌC PHẦN
+NGÀNH ĐÀO TẠO: CÔNG NGHỆ THÔNG TIN, KỸ THUẬT PHẦN MỀM
+HỌC PHẦN
+CHUYÊN ĐỀ J2EE
+(Ban hành kèm theo Quyết định số 2058/QĐ-ĐHSG ngày 08 tháng 09 năm 2020 của Hiệu trưởng Trường Đại học Sài Gòn)
+1. Thông tin tổng quát về học phần:
+- Tên học phần (tiếng Việt): Chuyên đề J2EE
+(tiếng Anh): J2EE
+- Mã số học phần: 841468
+- Thuộc khối kiến thức/kỹ năng:
+Kiến thức giáo dục đại cương
+Kiến thức ngành
+Kiến thức cơ sở ngành
+Kiến thức chuyên ngành (nếu có)
+- Số tín chỉ:
+4
++ Số tiết lý thuyết:
+45
++ Số tiết thảo luận/bài tập:
+0
++ Số tiết thực hành:
+30
++ Số tiết hoạt động nhóm:
+60
++ Số tiết tự học:
+90
+- Học phần tiên quyết:
+Không
+- Học phần trước:
+Lập trình Java
+- Học phần song hành (nếu có):
+Không
+2. Mô tả học phần (Vị trí, vai trò của học phần đối với chương trình đào tạo và khái quát những nội dung chính)
+Học phần nhằm trang bị cho sinh viên kiến thức và kỹ năng xây dựng ứng dụng web dựa trên công nghệ J2EE. Ngoài ra, sinh viên còn được trang bị kỹ năng làm việc nhóm và tự học để hoàn thiện bản thân hơn.
+3. Mục tiêu học phần
+Học phần giúp sinh viên đạt được những mục tiêu sau:
+Về kiến thức: Hiểu rõ kiến thức về công nghệ J2EE như: Servlet, JSP, JSF, Java Bean,.... Và vận dụng kiến thức học được vào việc xây dựng ứng dụng web từ đơn giản đến chuyên nghiệp.
+Về kỹ năng: Có khả năng áp dụng kiến thức đã học vào việc xây dựng ứng dụng quản lý thực tế.

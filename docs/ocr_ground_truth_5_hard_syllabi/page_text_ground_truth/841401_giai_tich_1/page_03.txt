@@ -1,0 +1,32 @@
+G14
+Vận dụng công thức Taylor, Maclaurin để khai triển hàm số.
+4
+G15
+Vận dụng đạo hàm tính được các bài toán giới hạn bằng công thức L'hopital, giải các bài toán khảo sát hàm số.
+4
+5. Nội dung chi tiết học phần
+CHƯƠNG 1. GIỚI HẠN VÀ SỰ LIÊN TỤC CỦA HÀM MỘT BIẾN
+1.1. Giới hạn dãy số
+1.1.1. Dãy số.
+1.1.2. Giới hạn dãy số.
+1.1.3. Các phép toán về giới hạn dãy số.
+1.1.4. Dãy đơn điệu, dãy con.
+1.2. Hàm số
+1.2.1. Khái niệm hàm số.
+1.2.2. Hàm chẵn, lẻ.
+1.2.3. Hàm ngược.
+1.2.4. Các hàm số sơ cấp cơ bản.
+1.2.5. Một số hàm thông dụng.
+1.3. Giới hạn hàm số
+1.3.1. Giới hạn của hàm số.
+1.3.2. Vô cùng bé – Vô cùng lớn.
+1.3.3. Phương pháp tính giới hạn hàm số.
+1.4. Hàm số liên tục
+1.4.1. Hàm số liên tục.
+1.4.2. Các tính chất cơ bản của hàm số liên tục trên một khoảng.
+CHƯƠNG 2. PHÉP TÍNH VI PHÂN HÀM MỘT BIẾN
+2.1. Đạo hàm của hàm số
+2.1.1. Khái niệm đạo hàm.
+2.1.2. Các quy tắc tính đạo hàm.
+2.1.3. Đạo hàm hàm hợp, hàm ngược, hàm ẩn, dạng tham số.
+2.2. Vi phân của hàm số

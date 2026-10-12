@@ -1,0 +1,38 @@
+9. Phương pháp đánh giá học phần
+9.1. Thang điểm và cách tính điểm đánh giá
+Điểm đánh giá bộ phận và điểm học phần được tính theo thang điểm 10 (từ 0 đến 10), làm tròn đến một chữ số thập phân
+9.2. Đánh giá bộ phận
+Bộ phận được đánh giá
+Điểm đánh giá bộ phận
+Trọng số
+Hình thức đánh giá
+1. Đánh giá quá trình
+Điểm quá trình
+0.5 (1.1 + 1.2)
+1.1. Ý thức học tập
+Điểm chuyên cần, thái độ học tập, ...
+0.1
+điểm danh, bài tập, đóng góp bài.
+1.2. Hồ sơ học tập
+- Điểm bài tập ở nhà và trên lớp, bài tập lớn, ...
+- Điểm thuyết trình, thực hành, thảo luận, làm việc nhóm,....
+- Điểm kiểm tra giữa kỳ
+0.4
+Điểm trung bình các bài kiểm tra hoặc báo cáo đồ án.
+2. Đánh giá cuối kỳ
+Điểm thi kết thúc học phần
+0.5
+tổng hợp
+9.3. Điểm học phần
+Điểm học phần là điểm trung bình chung theo trọng số tương ứng của Điểm quá trình (Điểm đánh giá quá trình) và Điểm thi kết thúc học phần (Điểm đánh giá cuối kỳ).
+10. Phụ trách học phần
+- Khoa/bộ môn phụ trách: Kỹ thuật phần mềm
+- Địa chỉ/email: 273 An Dương Vương, P3, Q5, TP. HCM
+TRƯỞNG KHOA
+TRƯỞNG BỘ MÔN
+GIẢNG VIÊN BIÊN SOẠN
+PSS. TS. Phạm Thế Bảo
+TS. Nguyễn Quốc Huy
+ThS. Phùng Thái Thiên Trang
+DUYỆT CỦA BAN GIÁM HIỆU
+PGS. TS. Nguyễn Khắc Hùng

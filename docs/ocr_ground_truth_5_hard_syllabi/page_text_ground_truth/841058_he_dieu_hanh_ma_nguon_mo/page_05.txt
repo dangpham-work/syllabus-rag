@@ -1,0 +1,34 @@
+1
+CHƯƠNG 1 TỔNG QUAN VỀ LINUX
+1.1. Giới thiệu hệ điều hành mã nguồn mở Linux
+1.2. Các đặc điểm cơ bản của Linux
+1.3. Kiến trúc Linux
+1.4. Ưu và nhược điểm của Linux
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi
+- Trình bày được đặc điểm của hệ điều hành Linux.
+- Mô tả kiến trúc, các ưu nhược điểm của Linux.
+- Áp dụng cài đặt hệ điều hành Linux trên máy tính.
+G1; G2
+2
+CHƯƠNG 2 QUÁ TRÌNH KHỞI ĐỘNG CỦA LINUX
+2.1. Tìm hiểu quá trình khởi động của Linux
+2.2. LILO và GRUB
+2.3. Runlevels
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả quá trình khởi động của Linux.
+- Phân biệt LILO và GRUB.
+- Áp dụng cài đặt hệ điều hành Linux trên máy tính.
+G2; G4; G6
+3
+CHƯƠNG 3 LỆNH VÀ TIỆN ÍCH TRÊN LINUX
+3.1. Lệnh trên Linux
+3.1.1. Các lệnh trên tập tin
+3.1.2. Các lệnh trên thư mục
+3.1.3. Nén và giải nén
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả các lệnh trên Linux.
+- Áp dụng các lệnh trên Linux.
+G2; G4

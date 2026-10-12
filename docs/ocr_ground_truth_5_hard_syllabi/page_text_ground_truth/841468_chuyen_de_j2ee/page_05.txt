@@ -1,0 +1,37 @@
+5.3. Ứng dụng
+bài tập chương 5
+hành
+- Thực hành ở phòng máy.
+- Thực hiện đồ án
+G5
+10, 11
+Chương 6. Các Chuyên đề
+Giảng viên tự đề xuất các chuyên đề phù hợp tùy theo xu hướng hiện tại, sau đây là các gợi ý:
+6.1. Chuyên đề 1: Spring
+6.2. Chuyên đề 2: Hibernate
+6.3. Chuyên đề 3: Strut
+6.4. Chuyên đề 4: Web service
+6.5. Chuyên đề 5: Java và Machine Learning
+Bài tập chương 6
+6 tiết lý thuyết + 4 tiết thực hành
+- Thảo luận trên lớp.
+- Thực hành ở phòng máy.
+- Thực hiện đồ án
+G5
+12,13
+Hướng dẫn thực hiện đồ án
+Đề tài: xây dựng ứng dụng web quản lý bán hàng, ...
+Hướng dẫn sv thực hiện đồ án
+Thực hiện đồ án theo yêu cầu của gv
+G6
+14
+Chấm đồ án
+vấn đáp
+Sv báo cáo đồ án
+15
+Ôn tập thi lý thuyết
+3 tiết lý thuyết+ 2 tiết thảo luận
+Ôn tập
+G1, G2, G3, G6
+8. Quy định đối với môn học và yêu cầu của giảng viên (những yêu cầu khác đối với môn học (nếu có), phù hợp với các quy chế đào tạo hiện hành)
+- Sinh viên phải thực hiện đồ án xây dựng ứng dụng web bằng kỹ thuật J2EE

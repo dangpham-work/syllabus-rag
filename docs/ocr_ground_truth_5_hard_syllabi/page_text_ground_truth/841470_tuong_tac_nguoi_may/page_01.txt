@@ -1,0 +1,42 @@
+UBND THÀNH PHỐ HỒ CHÍ MINH
+TRƯỜNG ĐẠI HỌC SÀI GÒN
+ĐỀ CƯƠNG CHI TIẾT HỌC PHẦN
+NGÀNH ĐÀO TẠO: CÔNG NGHỆ THÔNG TIN, KỸ THUẬT PHẦN MỀM
+HỌC PHẦN
+TƯƠNG TÁC NGƯỜI-MÁY
+(Ban hành kèm theo Quyết định số ... ngày ... tháng ... năm ... của Hiệu trưởng Trường Đại học Sài Gòn)
+1. Thông tin tổng quát về học phần:
+- Tên học phần (tiếng Việt): Tương tác người-máy
+(tiếng Anh): Human Computer Interaction
+- Mã số học phần: 841470
+- Thuộc khối kiến thức/kỹ năng:
+Kiến thức giáo dục đại cương
+Kiến thức ngành
+Kiến thức cơ sở ngành
+Kiến thức chuyên ngành (nếu có)
+- Số tín chỉ:
+4
++ Số tiết lý thuyết:
+45
++ Số tiết thảo luận/bài tập:
+0
++ Số tiết thực hành:
+30
++ Số tiết hoạt động nhóm:
+30
++ Số tiết tự học:
+90
+- Học phần tiên quyết:
+Không
+- Học phần trước:
+Thiết kế giao diện
+- Học phần song hành (nếu có):
+không
+2. Mô tả học phần (Vị trí, vai trò của học phần đối với chương trình đào tạo và khái quát những nội dung chính)
+Cung cấp cho sinh viên kiến thức nâng cao về thiết kế giao diện phần mềm.
+Sau khi học xong, sinh viên có kiến về thiết kế giao diện khả dụng , thiết kế giao diện điều hướng, menu, thiết kế web động, SEO, cách thiết kế theo mô hình Agile..
+3. Mục tiêu học phần
+Học phần giúp sinh viên đạt được những mục tiêu sau:
+Về kiến thức:
+- Có kiến thức về khoa học thiết kế giao diện, xây dựng kỹ năng thiết kế lấy con người làm trung tâm
+- Các thiết kế theo quy trình Agile.

@@ -1,0 +1,52 @@
+8
+CHƯƠNG 5: QUẢN LÝ MAIL, WEB VÀ FTP SERVER
+5.1. Quản lý mail server.
+5.1.1. Khái niệm mail server.
+5.1.2. Giao thức POP, SMTP, IMAP.
+5.1.3. Thiết lập mail server.
+5.1.4. Thiết lập mail client.
+5.1.5. Xây dựng web mail.
+5.1.6. Quản lý mail server.
+3 tiết lý thuyết + 2 tiết thực hành.
+Định nghĩa mail server.
+Xác định các giao thức trong mail server.
+Áp dụng cấu hình mail server.
+G1
+G2
+G4
+9
+5.2. Quản lý web server.
+5.2.1. Khái niệm web server.
+5.2.2. Giao thức HTTP.
+5.2.3. Thiết lập web server.
+5.2.4. Quản lý web server.
+3 tiết lý thuyết + 2 tiết thực hành.
+Định nghĩa web server.
+Xác định các giao thức trong web server.
+Áp dụng cấu hình web server.
+G1
+G2
+G4
+10
+5.3. Quản lý FTP server.
+5.3.1. Khái niệm FTP server.
+5.3.2. Cài đặt và cấu hình FTP server.
+5.3.3. Quản lý FTP server.
+3 tiết lý thuyết + 2 tiết thực hành.
+Định nghĩa FTP server.
+Áp dụng cấu hình FTP, Mail, Web server.
+G1
+G4
+11
+CHƯƠNG 6: NETWORK LOAD BALANCING VÀ GIÁM SÁT MẠNG
+6.1. Network load balancing.
+6.1.1. Khái niệm network load balancing.
+6.1.2. Mô hình triển khai.
+6.1.3. Triển khai network load balancing.
+3 tiết lý thuyết + 2 tiết thực hành.
+Định nghĩa network load balancing.
+Phân tích mô hình triển khai.
+Áp dụng cấu hình triển khai network load balancing.
+G1
+G3
+G4

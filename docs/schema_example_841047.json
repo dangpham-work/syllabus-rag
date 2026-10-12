@@ -1,0 +1,119 @@
+{
+  "course_code": "841047",
+  "course_name": "Công nghệ phần mềm",
+  "course_name_en": "Software Engineering",
+  "credits": 4,
+  "knowledge_block": "nganh",
+  "hours": {
+    "theory": 45,
+    "exercises": 0,
+    "practice": 30,
+    "group_activity": 40,
+    "self_study": 90
+  },
+  "prerequisites": [],
+  "corequisites": [],
+  "clos": [
+    {
+      "clo_id": "G1",
+      "text": "Hiểu rõ về công nghệ phần mềm, yêu cầu, đặc tả, UML, quy trình trong phát triển, kiểm nghiệm, định giá phần mềm, thiết kế và mô hình hóa phần mềm.",
+      "details": [
+        "Hiểu các khái niệm, quy trình trong công nghệ phần mềm.",
+        "Hiểu cách phân tích và sử dụng các kỹ thuật trong công nghệ phần mềm."
+      ],
+      "level_raw": "2",
+      "level": 2,
+      "page": 2,
+      "ocr_ok": true
+    },
+    {
+      "clo_id": "G2",
+      "text": "Mô tả các đặc tả phần mềm, áp dụng các quy trình phần mềm.",
+      "details": [
+        "Áp dụng các quy trình phát triển phần mềm.",
+        "Phân tích và mô tả các đặc tả phần mềm."
+      ],
+      "level_raw": "3",
+      "level": 3,
+      "page": 2,
+      "ocr_ok": true
+    },
+    {
+      "clo_id": "G3",
+      "text": "Áp dụng UML cho các đặc tả, kiến trúc phần mềm, kiểm nghiệm và định giá phần mềm.",
+      "details": [
+        "Phân tích yêu cầu của người sử dụng cho bài toán cụ thể và đặc tả các yêu cầu.",
+        "Thiết kế chi tiết phần mềm theo kiến trúc hệ thống đã thiết kế.",
+        "Kiểm nghiệm và định giá phần mềm."
+      ],
+      "level_raw": "4",
+      "level": 4,
+      "page": 3,
+      "ocr_ok": true
+    },
+    {
+      "clo_id": "G4",
+      "text": "Áp dụng các phương pháp kiểm thử và kiểm nghiệm phần mềm. Sử dụng các quy trình kiểm thử nhằm kiểm tra sự chất lượng của một phần mềm.",
+      "details": [],
+      "level_raw": "4",
+      "level": 4,
+      "page": 3,
+      "ocr_ok": true
+    },
+    {
+      "clo_id": "G5",
+      "text": "Thực hiện làm việc nhóm một cách hiệu quả để đạt được mục tiêu đề ra khi thực hiện đồ án.",
+      "details": [
+        "Thể hiện kỹ năng lập kế hoạch thực hiện đồ án môn học.",
+        "Thể hiện kỹ năng quản lý thời gian trong quá trình thực hiện đồ án môn học."
+      ],
+      "level_raw": "5",
+      "level": 5,
+      "page": 3,
+      "ocr_ok": true
+    },
+    {
+      "clo_id": "G6",
+      "text": "Thể hiện tính nghiêm túc và kỷ luật trong các hoạt động học tập của học phần.",
+      "details": [
+        "Tuân thủ nghiêm túc các quy định trong việc học lý thuyết và thực hành.",
+        "Thể hiện tính kỷ luật trong làm việc nhóm."
+      ],
+      "level_raw": "3",
+      "level": 3,
+      "page": 3,
+      "ocr_ok": true
+    }
+  ],
+  "sections": {
+    "general_info": "- Tên học phần (tiếng Việt): CÔNG NGHỆ PHẦN MỀM\n(tiếng Anh): SOFTWARE ENGINEERING\n- Mã số học phần: 841047\n- Thuộc khối kiến thức/kỹ năng: Kiến thức ngành\n- Số tín chỉ: 4\n+ Số tiết lý thuyết: 45\n+ Số tiết thảo luận/bài tập: 0\n+ Số tiết thực hành: 30\n+ Số tiết hoạt động nhóm: 40\n+ Số tiết tự học: 90\n- Học phần tiên quyết: Không\n- Học phần song hành (nếu có): Không",
+    "course_description": "Trang bị các kiến thức nâng cao về tổ chức quản lý và hiện thực các sản phẩm phần mềm, từ giai đoạn phân tích yêu cầu cho đến các giai đoạn kiểm thử và tiến hoá của phần mềm.",
+    "course_objectives": "Học phần giúp sinh viên đạt được những mục tiêu sau:\nVề kiến thức: Mục tiêu của môn học này là cung cấp cho sinh viên kiến thức cơ bản về công nghệ phần mềm bao gồm các chu trình phát triển phần mềm, việc đặc tả, cách thức mô hình hóa, kỹ thuật thiết kế, các mẫu, kiểm nghiệm phần mềm.\nVề kỹ năng: Tìm các tài liệu liên quan tới học phần. Thảo luận nhóm, cách tổ chức công việc, làm việc nhóm. Có khả năng tự triển khai một phần mềm cơ bản trong thực tế.\nVề thái độ: Chủ động trong học tập, tích lũy kiến thức, kinh nghiệm để nâng cao trình độ chuyên môn nghiệp vụ.",
+    "course_learning_outcomes": "Ký hiệu chuẩn đầu ra (1) | Mô tả chuẩn đầu ra (2) | Trình độ năng lực (3)\nG1 | Hiểu rõ về công nghệ phần mềm, yêu cầu, đặc tả, UML, quy trình trong phát triển, kiểm nghiệm, định giá phần mềm, thiết kế và mô hình hóa phần mềm. Hiểu các khái niệm, quy trình trong công nghệ phần mềm. Hiểu cách phân tích và sử dụng các kỹ thuật trong công nghệ phần mềm. | 2\nG2 | Mô tả các đặc tả phần mềm, áp dụng các quy trình phần mềm. Áp dụng các quy trình phát triển phần mềm. Phân tích và mô tả các đặc tả phần mềm. | 3\nG3 | Áp dụng UML cho các đặc tả, kiến trúc phần mềm, kiểm nghiệm và định giá phần mềm. Phân tích yêu cầu của người sử dụng cho bài toán cụ thể và đặc tả các yêu cầu. Thiết kế chi tiết phần mềm theo kiến trúc hệ thống đã thiết kế. Kiểm nghiệm và định giá phần mềm. | 4\nG4 | Áp dụng các phương pháp kiểm thử và kiểm nghiệm phần mềm. Sử dụng các quy trình kiểm thử nhằm kiểm tra sự chất lượng của một phần mềm. | 4\nG5 | Thực hiện làm việc nhóm một cách hiệu quả để đạt được mục tiêu đề ra khi thực hiện đồ án. Thể hiện kỹ năng lập kế hoạch thực hiện đồ án môn học. Thể hiện kỹ năng quản lý thời gian trong quá trình thực hiện đồ án môn học. | 5\nG6 | Thể hiện tính nghiêm túc và kỷ luật trong các hoạt động học tập của học phần. Tuân thủ nghiêm túc các quy định trong việc học lý thuyết và thực hành. Thể hiện tính kỷ luật trong làm việc nhóm. | 3",
+    "course_content": "Chương 1. Giới thiệu công nghệ phần mềm.\nChương 2. Các quy trình phần mềm.\nChương 3. Kỹ thuật phân tích yêu cầu.\nChương 4. Thiết kế chi tiết phần mềm.\nChương 5. Mô hình hoá và kiến trúc hệ thống phần mềm.\nChương 6. Kiểm nghiệm và định giá phần mềm.",
+    "learning_resources": "6.1. Tài liệu bắt buộc (không quá 3 tài liệu)\n[1] Engineering Software as a Service: An Agile Approach Using Cloud Computing by Armando Fox and David Patterson, Strawberry Canyon Publisher, 2013.\n6.2. Tài liệu tham khảo\n[2] Introduction to Software Engineering, Ronald J. Leach, CRC Press 2000.",
+    "teaching_schedule": "Tuần/Tiết/Buổi học | Nội dung chi tiết của học phần | Hình thức tổ chức dạy học | CĐR môn học\n1 | Chương 1. Giới thiệu công nghệ phần mềm: 1.1. Tổng quan về môn học; 1.2. Phát triển phần mềm một cách chuyên nghiệp | Giảng lý thuyết và thảo luận trên lớp; Hướng dẫn giải bài tập; Hướng dẫn thực hành ở phòng máy | G1, G2\n2,3 | Chương 2. Mô hình phát triển phần mềm: 2.1. Các hoạt động trong một chu trình; 2.2. Xử lý các thay đổi | Giảng lý thuyết và thảo luận trên lớp; Hướng dẫn giải bài tập; Hướng dẫn thực hành ở phòng máy | G2, G3\n4,5,6 | Chương 3. Kỹ thuật phân tích yêu cầu: 3.1. Yêu cầu chức năng và phi chức năng; 3.2. Lập tài liệu mô tả yêu cầu của phần mềm; 3.3. Đặc tả yêu cầu; 3.4. Quy trình xây dựng đặc tả phần mềm; 3.5 Phân tích và khám phá các đặc tả; 3.6 Kiểm nghiệm các đặc tả; 3.7 Quản lý các đặc tả phần mềm | Giảng lý thuyết và thảo luận trên lớp; Hướng dẫn giải bài tập; Hướng dẫn thực hành ở phòng máy | G2, G3\n7,8,9 | Chương 4. Thiết kế chi tiết phần mềm: 4.1. Thiết kế hướng đối tượng và UML; 4.2. Một số mẫu thiết kế; 4.3. Các quy cách, quy chuẩn trong quá trình thiết kế phần mềm; 4.4. Các vấn đề chuyên sâu trong thiết kế chi tiết | Giảng lý thuyết và thảo luận trên lớp; Hướng dẫn giải bài tập; Hướng dẫn thực hành ở phòng máy | G4\n10, 11 | Chương 5. Mô hình hoá và Kiến trúc hệ thống phần mềm: 5.1. Cách mô hình hoá hệ thống phần mềm; 5.2. Xác lập kiến trúc phần mềm; 5.3. Các góc nhìn trong kiến trúc phần mềm; 5.4. Các mẫu để thiết lập kiến trúc phần mềm; 5.5. Kiến trúc cho các ứng dụng | Giảng lý thuyết và thảo luận trên lớp; Hướng dẫn giải bài tập; Hướng dẫn thực hành ở phòng máy | G3, G4\n12,13 | Chương 6. Kiểm thử và định giá phần mềm: 6.1. Quy trình cơ bản kiểm thử phần mềm; 6.2. Cách định giá phần mềm | Giảng lý thuyết và thảo luận trên lớp; Hướng dẫn giải bài tập; Hướng dẫn thực hành ở phòng máy | G4\n14,15 | Ôn tập, Đồ án giữa kỳ và thi kết thúc học phần | |",
+    "course_policies": "",
+    "assessment": "9.1. Thang điểm và cách tính điểm đánh giá\nĐiểm đánh giá bộ phận và điểm học phần được tính theo thang điểm 10 (từ 0 đến 10), làm tròn đến một chữ số thập phân.\n9.2. Đánh giá bộ phận\nBộ phận được đánh giá | Điểm đánh giá bộ phận | Trọng số | Hình thức đánh giá\n1. Đánh giá quá trình | Điểm quá trình | 0.5 (1.1 + 1.2) | Kiểm tra/Đồ Án\n1.1. Ý thức học tập | Điểm chuyên cần, thái độ học tập. | 0.1 | Điểm danh/bài tập\n1.2. Hồ sơ học tập | - Đồ án | 0.4 | Báo cáo đồ án\n2. Đánh giá cuối kỳ | Điểm thi kết thúc học phần | 0.5 (≥ 0.5) | Thi cuối kì\n9.3. Điểm học phần\nĐiểm học phần là điểm trung bình chung theo trọng số tương ứng của Điểm quá trình (Điểm đánh giá quá trình) và Điểm thi kết thúc học phần (Điểm đánh giá cuối kỳ).",
+    "responsible_unit": "- Khoa/bộ môn phụ trách: Khoa Công nghệ Thông tin.\n- Địa chỉ/email: 273 An Dương Vương, P3, Q5, TP. HCM."
+  },
+  "section_pages": {
+    "general_info": 1,
+    "course_description": 1,
+    "course_objectives": 1,
+    "course_learning_outcomes": 2,
+    "course_content": 3,
+    "learning_resources": 4,
+    "teaching_schedule": 4,
+    "course_policies": 6,
+    "assessment": 6,
+    "responsible_unit": 7
+  },
+  "source_file": "40 - 841047 - Công nghệ phần mềm.pdf",
+  "n_pages": 8,
+  "provenance": {
+    "method": "hand_filled",
+    "verified": false,
+    "note": "Điền tay từ ảnh trang 300 dpi (data/interim/images/841047/); chưa có người đối chiếu. Mục 8 có tiêu đề nhưng để trống trong đề cương nên course_policies là chuỗi rỗng."
+  }
+}

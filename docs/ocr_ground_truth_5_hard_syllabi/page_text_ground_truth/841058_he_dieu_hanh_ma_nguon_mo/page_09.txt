@@ -1,0 +1,32 @@
+15
+8.3. Các bài tập lập trình dùng cho việc quản trị hệ thống
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả cách thức xử lý lập trình Shell trong việc quản lý hệ thống.
+- Áp dụng lập trình Shell trên Linux.
+G3; G5
+8. Quy định đối với môn học và yêu cầu của giảng viên (những yêu cầu khác đối với môn học (nếu có), phù hợp với các quy chế đào tạo hiện hành)
+- Không
+9. Phương pháp đánh giá học phần
+9.1. Thang điểm và cách tính điểm đánh giá
+Điểm đánh giá bộ phận và điểm học phần được tính theo thang điểm 10 (từ 0 đến 10), làm tròn đến một chữ số thập phân
+9.2. Đánh giá bộ phận
+Bộ phận được đánh giá
+Điểm đánh giá bộ phận
+Trọng số
+Hình thức đánh giá
+1. Đánh giá quá trình
+Điểm quá trình
+0.5
+1.1. Ý thức học tập
+Điểm chuyên cần, thái độ học tập, ...
+0.1
+1.2. Hồ sơ học tập
+- Điểm bài tập ở nhà và trên lớp, bài tập lớn, ...
+- Điểm thuyết trình, thực hành, thảo luận, làm việc nhóm,....
+- Điểm kiểm tra giữa kỳ
+0.4
+2. Đánh giá cuối kỳ
+Điểm thi kết thúc học phần
+0.5
+Tự luận kết hợp trắc nghiệm, đề đóng, thời gian làm bài: 90 phút.

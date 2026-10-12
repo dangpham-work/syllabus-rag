@@ -1,0 +1,45 @@
+Về thái độ: Có thái độ học tập chăm chỉ, nghiêm túc và sáng tạo.
+4. Chuẩn đầu ra học phần
+Ký hiệu chuẩn đầu ra (1)
+Mô tả chuẩn đầu ra (2)
+Trình độ năng lực (3)
+G1
+Hiểu và sử dụng các khái niệm về lập trình web cơ bản
+3
+G2
+Hiểu và sử dụng được các khái niệm mô hình phân lớp
+3
+G3
+Hiểu và sử dụng được các đối tượng JSP, JSF và ServLet
+3
+G4
+Hiểu và sử dụng được các đối tượng JavaBean
+2
+G5
+Hiểu và sử dụng các kỹ thuật trong các chuyên đề (Springer and Hibernate)
+2
+G6
+Lập trình được một ứng dụng quản lý đơn giản
+4
+5. Nội dung chi tiết học phần
+Chương 1. GIỚI THIỆU CÔNG NGHỆ J2EE
+1.1. Giới thiệu
+1.2. Kiến trúc J2EE
+1.3. Mô hình phân lớp
+1.4. Kết nối cơ sở dữ liệu
+Bài tập chương 1
+Chương 2. JSP
+2.1. Giới thiệu
+2.2. Các tag thường dùng
+2.3. Ứng dụng
+Bài tập chương 2
+Chương 3. ServLet
+3.1. Giới thiệu
+3.2. Các đối tượng thường dùng
+3.3. Ứng dụng
+bài tập chương 3
+Chương 4. JSF
+4.1. Giới thiệu
+4.2. Phương pháp
+4.3. Ứng dụng
+bài tập chương 4

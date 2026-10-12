@@ -1,0 +1,34 @@
+4
+3.2. Tiện ích trên Linux
+3.2.1. Kênh chuẩn trên Linux
+3.2.2. Tiện ích soạn thảo/email.
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả các kênh, tiện ích trên Linux.
+- Áp dụng các tiện ích trên Linux.
+G2; G4
+5
+CHƯƠNG 4 QUẢN TRỊ NGƯỜI DÙNG VÀ NHÓM NGƯỜI DÙNG
+4.1. Giới thiệu Người dùng và Nhóm người dùng trên Linux
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Trình bày các loại người dùng, nhóm người dùng trên Linux.
+- Áp dụng quản lý người dung và nhóm người dung trên Linux.
+G1 G4;
+6
+4.2. Quản trị người dùng và nhóm người dùng bằng dòng lệnh
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Mô tả các lệnh quản trị người dung trên Linux.
+- Áp dụng các lệnh trên Linux.
+G2 G4;
+7
+CHƯƠNG 5 LINUX FILESYSTEMS
+5.1. Các khái niệm cơ bản về Filesystems
+5.2. Các thao tác trên Filesystems
+5.2.1. Định dạng Filesystems
+2 tiết lý thuyết + 2 tiết thực hành.
+- Thuyết giảng chủ động, đặt câu hỏi.
+- Trình bày các khái niệm cơ bản của file systems.
+- Áp dụng các thao tác của file systems trên Linux.
+G1; G4

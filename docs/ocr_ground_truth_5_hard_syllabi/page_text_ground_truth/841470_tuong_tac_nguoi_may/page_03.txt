@@ -1,0 +1,17 @@
+3.2. SEO
+3.3. Kim tự tháp ngược & cấu trúc trực quan
+3.4 Readability và Legibility
+CHƯƠNG 4. AGILE UX
+4.1. Users, Personas & Design Maps
+4.2. Use Cases, Stories & Scenarios
+4.3.Mô hình khái niệm
+6. Học liệu
+6.1. Tài liệu bắt buộc (không quá 3 tài liệu)
+[1] Yvonne Rogers, Helen Sharp, Jennifer J. Preece. Interaction Design: Beyond HumanComputer Interaction (3rd Edition). Wiley Publishing, USA, 2011.
+6.2. Tài liệu tham khảo
+[2] Donald Norman. The Design of Everyday Things: Revised and Expanded Edition. Basic Book, NewYork, 2013
+[3] Jeff Johnson. GUI Bloopers 2.0 Common User Interface Design Don's and Dos. Morgan Kaufmann, USA, 2007.
+[4] Donald Norman. Emotional Design: Why We Love (or Hate) Everyday Things. Basic Book, NewYork, 2005
+[5] Donald Norman. The Design of Future Things. Basic Book, NewYork, 2005
+[6] Shneiderman, Ben, and Catherine Plaisant. Designing the User Interface: Strategies for Effective Human-Computer Interaction. 4th ed. Addison Wesley, 2004
+[7] Jhonson, Jeff. GUI Bloopers: Don'ts and Do's for Software Developers and Web Designers (Interactive Technologies). Morgan Kaufmann, 2000
