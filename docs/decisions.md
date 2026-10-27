@@ -58,3 +58,38 @@ Tuần 2 cần JSON đề cương 10 mục cho mọi môn và `sections_labeled.
 
 ### Hệ quả
 - `validate_json.py` báo 54/54 hợp lệ. Cần `jsonschema` (chưa thêm vào `requirements.txt`, chờ nhóm đồng ý).
+
+## D3. Mô hình phân loại 11 mục M1 và đóng gói pipeline analyze_pdf (25/10/2026)
+
+**Người quyết định:** TV2 (tầng dữ liệu) · **Trạng thái:** đã chốt cho phiên bản v1; sẵn sàng cho tầng API và Đánh giá.
+
+### Bối cảnh
+Tuần 3 cần mô hình học máy M1 phân loại đoạn văn OCR vào 11 lớp (10 mục chuẩn SGU và 1 mục "other" cho bìa/ký tự rác) đạt Macro-F1 ≥ 0,85 trên tập kiểm thử độc lập, khắc phục nhược điểm của luật regex khi OCR làm mất tiêu đề hoặc văn bản tràn trang. Đồng thời cần đóng gói hàm `analyze_pdf(path) -> dict` để tầng API (TV3) nạp vào `/analyze-syllabus` và tầng ứng dụng (TV4) tích hợp demo.
+
+### Quyết định
+1. **Phân chia dữ liệu (`data/processed/m1_split.csv`):** 54 đề cương được chia theo mã học phần thành 38 huấn luyện (train), 8 kiểm định (val), và 8 kiểm thử (test) với `random_seed: 42`. Cách chia này đảm bảo không rò rỉ dữ liệu giữa các đề cương có cùng từ vựng, văn phong.
+2. **Kiến trúc mô hình M1:**
+   - Đặc trưng văn bản: TF-IDF từ (n-gram 1–2, 10.000 chiều) và ký tự (n-gram 2–4, 10.000 chiều).
+   - Đặc trưng vị trí: số trang, tỷ lệ trang tương đối, chỉ số đoạn, tỷ lệ vị trí đoạn, độ dài ký tự và số dòng.
+   - Ngữ cảnh thứ tự: nhãn của đoạn liền trước (`prev_section`, one-hot).
+   - Phân loại bằng Logistic Regression (`C = 5.0`, `class_weight = "balanced"`).
+   - Giải mã tự hồi quy (Autoregressive decoding) kết hợp ràng buộc đơn điệu thứ tự mục (mục sau không đi lùi so với mục trước, trừ nhãn "other").
+3. **Đóng gói pipeline `analyze_pdf` (`src/syllabus_core/models/predict.py`):**
+   - Tiếp nhận tệp PDF (hoặc đường dẫn), kết xuất ảnh, OCR, làm sạch, phân đoạn văn bản, phân loại mục bằng `section_clf.pkl`, và trích xuất các trường thông tin (`course_code`, `course_name`, `credits`, `prerequisites`, `clos`, `sections`, `missing_sections`, `model_version`, `processing_time_s`).
+   - Tái sử dụng bộ nhớ cache văn bản sạch khi khả dụng để tối ưu tốc độ phản hồi (~0,14 giây/đề cương).
+
+### Lý do
+- Mô hình đạt **Accuracy = 0,9107** và **Macro-F1 = 0,9188** trên 8 đề cương tập Test (929 đoạn), vượt xa chỉ tiêu tối thiểu của đề cương (0,85).
+- Thử nghiệm PhoBERT-base trên CPU ước tính mất ~1,5 giờ cho 5 epoch, trong khi Logistic Regression chỉ mất vài giây huấn luyện và phản hồi cực nhanh (~0,14s), phù hợp tối đa cho việc nạp trên CPU của máy chủ REST API.
+- Đánh giá trên 8 đề cương test: trích xuất đúng 100% mã môn học, 100% số tín chỉ và tiên quyết (với dữ liệu đã hiệu chỉnh).
+
+### Hạn chế và rủi ro
+- Bảng kế hoạch giảng dạy (mục 7) và nội dung chi tiết (mục 5) chiếm số lượng đoạn lớn nhất, một số đoạn ngắn không dấu hiệu vẫn phụ thuộc vào nhãn đoạn trước.
+- Trích xuất bảng CLO trên các đề cương OCR mờ nhiều cột vẫn cần đối chiếu bảng thô `clos_raw.csv`.
+
+### Hệ quả
+- Mô hình được lưu tại `models/section_clf.pkl`.
+- Toàn bộ thí nghiệm, bảng so sánh và ma trận nhầm lẫn được trình bày đầy đủ tại notebook `notebooks/exploratory/1.2-tv2-section-classifier.ipynb`.
+- Số liệu đánh giá chính thức được ghi vào `results/metrics.json`.
+- Hàm `analyze_pdf` đã sẵn sàng để TV3 import vào endpoint `/analyze-syllabus`.
+
