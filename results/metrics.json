@@ -1,0 +1,90 @@
+{
+  "m1_section_classifier": {
+    "target_macro_f1": 0.85,
+    "classes_count": 11,
+    "classes": [
+      "general_info",
+      "course_description",
+      "course_objectives",
+      "course_learning_outcomes",
+      "course_content",
+      "learning_resources",
+      "teaching_schedule",
+      "course_policies",
+      "assessment",
+      "responsible_unit",
+      "other"
+    ],
+    "dataset_split": {
+      "train_courses": 38,
+      "train_paragraphs": 3854,
+      "val_courses": 8,
+      "val_paragraphs": 910,
+      "test_courses": 8,
+      "test_paragraphs": 929,
+      "total_courses": 54,
+      "total_paragraphs": 5693
+    },
+    "experiments": {
+      "regex_baseline": {
+        "description": "Luật regex tiêu đề số thứ tự 1-10",
+        "val_accuracy": 1.0,
+        "val_macro_f1": 1.0
+      },
+      "tfidf_logreg_text_only": {
+        "description": "TF-IDF từ (1-2) và ký tự (2-4), C=1.0, chỉ dùng nội dung đoạn",
+        "val_accuracy": 0.7187,
+        "val_macro_f1": 0.7766
+      },
+      "tfidf_linearsvc_text_only": {
+        "description": "LinearSVC C=1.0, chỉ dùng nội dung đoạn",
+        "val_accuracy": 0.7154,
+        "val_macro_f1": 0.7687
+      },
+      "m1_v1_autoregressive_logreg": {
+        "description": "TF-IDF + Đặc trưng vị trí + Nhãn đoạn trước + Giải mã tự hồi quy đơn điệu",
+        "val_accuracy": 0.9374,
+        "val_macro_f1": 0.9132,
+        "test_accuracy": 0.9107,
+        "test_macro_f1": 0.9188,
+        "target_exceeded": true
+      }
+    }
+  },
+  "m1_field_extraction": {
+    "test_syllabi_count": 8,
+    "test_courses": [
+      "841048",
+      "841109",
+      "841303",
+      "841323",
+      "841434",
+      "841462",
+      "841470",
+      "841479"
+    ],
+    "raw_ocr_rule_extraction": {
+      "course_code_accuracy": 1.0,
+      "credits_accuracy": 0.875,
+      "prerequisites_macro_f1": 0.375,
+      "clo_id_macro_f1": 0.6544
+    },
+    "verified_extraction": {
+      "course_code_accuracy": 1.0,
+      "credits_accuracy": 1.0,
+      "prerequisites_macro_f1": 1.0,
+      "clo_id_macro_f1": 0.6544
+    },
+    "performance": {
+      "avg_latency_seconds": 0.1426,
+      "min_latency_seconds": 0.103,
+      "max_latency_seconds": 0.176
+    }
+  },
+  "metadata": {
+    "author": "TV2 (Long - Tầng dữ liệu)",
+    "date": "2026-10-27",
+    "milestone": "Mốc 3 - Tuần 3",
+    "status": "completed"
+  }
+}
