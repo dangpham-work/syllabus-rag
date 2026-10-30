@@ -1,0 +1,173 @@
+models:
+
+  m1_section_classifier:
+    description: "Phân loại đoạn văn OCR vào 11 mục chuẩn SGU"
+    author: "TV2 (Long – Tầng dữ liệu)"
+    date_trained: "2026-10-25"
+    milestone: "Mốc 3 – Tuần 3"
+    status: "production"
+    artifact_path: "models/section_clf.pkl"
+    framework: "scikit-learn"
+    algorithm: "LogisticRegression"
+    hyperparameters:
+      C: 5.0
+      class_weight: "balanced"
+      max_iter: 1000
+      solver: "lbfgs"
+      multi_class: "multinomial"
+    features:
+      - "TF-IDF từ (n-gram 1-2, max_features=10000)"
+      - "TF-IDF ký tự (n-gram 2-4, max_features=10000)"
+      - "Đặc trưng vị trí: page_num, page_ratio, para_idx, para_ratio, char_len, line_count"
+      - "Nhãn đoạn trước: prev_section (one-hot, 11 lớp)"
+    classes:
+      - general_info
+      - course_description
+      - course_objectives
+      - course_learning_outcomes
+      - course_content
+      - learning_resources
+      - teaching_schedule
+      - course_policies
+      - assessment
+      - responsible_unit
+      - other
+    dataset:
+      train_courses: 38
+      train_paragraphs: 3854
+      val_courses: 8
+      val_paragraphs: 910
+      test_courses: 8
+      test_paragraphs: 929
+      total_courses: 54
+      random_seed: 42
+      split_by: "course_code"
+    metrics:
+      val_accuracy: 0.9374
+      val_macro_f1: 0.9132
+      test_accuracy: 0.9107
+      test_macro_f1: 0.9188
+      target_macro_f1: 0.85
+      target_exceeded: true
+    notes: >
+      Dùng giải mã tự hồi quy (autoregressive decoding) với ràng buộc đơn điệu thứ tự mục.
+      Latency trung bình 0.14s/đề cương. Xem chi tiết tại notebook 1.2-tv2-section-classifier.ipynb.
+
+  m2_bloom_classifier:
+    description: "Phân loại CLO vào 7 lớp Bloom Anderson & Krathwohl (0-6)"
+    author: "TV1 (Đăng – Tầng mô hình)"
+    date_trained: null  # Cập nhật sau khi train xong
+    milestone: "Mốc 4 – Tuần 4"
+    status: "in_progress"
+    artifact_path: "models/bloom_model.pkl"
+    framework: "scikit-learn"
+    algorithm: "LogisticRegression"
+    hyperparameters:
+      C: null           # Tìm qua GridSearchCV: {0.1, 0.5, 1.0, 5.0, 10.0}
+      class_weight: "balanced"
+      max_iter: 1000
+    features:
+      - "TF-IDF từ (n-gram 1-2, max_features=5000)"
+      - "TF-IDF ký tự (n-gram 2-4, max_features=3000)"
+    classes:
+      - "0: Ngoài miền (Out-of-domain)"
+      - "1: Nhớ (Remember)"
+      - "2: Hiểu (Understand)"
+      - "3: Áp dụng (Apply)"
+      - "4: Phân tích (Analyze)"
+      - "5: Đánh giá (Evaluate)"
+      - "6: Sáng tạo (Create)"
+    dataset:
+      source: "data/processed/clos_labeled.csv"
+      cv_strategy: "5-fold theo mã môn (StratifiedGroupKFold)"
+      random_seed: 42
+    metrics:
+      b0_rule_macro_f1: null     # Cập nhật sau khi chạy notebook 2.0
+      b1_cv_mean_macro_f1: null  # Cập nhật sau khi chạy notebook 2.0
+      b2_cv_mean_macro_f1: null  # Cập nhật sau khi chạy notebook 2.1
+      target_macro_f1: 0.75
+    notes: >
+      B0: rule-based (danh sách động từ từ labeling_guideline_bloom.md).
+      B1: TF-IDF + LogReg, GridSearchCV.
+      B2: multilingual-e5-small embedding + LogReg head (fallback: TF-IDF SVD).
+      Xem chi tiết tại notebooks 2.0, 2.1, 2.2.
+
+  m3_reranker:
+    description: "LambdaMART reranker cho retrieval chunk đề cương SGU"
+    author: "TV1 (Đăng – Tầng mô hình)"
+    date_trained: null  # Cập nhật sau khi train xong
+    milestone: "Mốc 4 – Tuần 4"
+    status: "in_progress"
+    artifact_path: "models/reranker.txt"
+    framework: "lightgbm"
+    algorithm: "LambdaMART"
+    hyperparameters:
+      objective: "lambdarank"
+      n_estimators: 300
+      learning_rate: 0.05
+      num_leaves: 31
+      random_seed: 42
+    features:
+      - "bm25_score"
+      - "dense_cosine_score"
+      - "rrf_score"
+      - "chunk_length_tokens"
+      - "query_chunk_unigram_overlap"
+      - "chunk_position_in_section"
+      - "has_course_code"
+      - "tfidf_cosine_query_chunk"
+    retrieval_config:
+      bm25_top_k: 30
+      dense_top_k: 30
+      rrf_k: 60
+      rerank_in: 20
+      context_k: 5
+      embedding_model: "intfloat/multilingual-e5-small"
+    dataset:
+      source: "Synthetic 80 QA pairs từ syllabi"
+      random_seed: 42
+    metrics:
+      recall_at_1: null   # Cập nhật sau khi train
+      recall_at_3: null
+      recall_at_5: null
+      recall_at_10: null
+      mrr_at_10: null
+      target_recall_at_5: 0.85
+    notes: >
+      6 cấu hình so sánh: BM25, Dense, RRF, RRF+LogReg, RRF+LambdaMART, RRF+CrossEncoder.
+      CrossEncoder là option dự phòng khi có GPU. Xem chi tiết tại notebooks 3.0, 3.1, 3.2.
+
+  m4_pathway_planner:
+    description: "Lập kế hoạch học tập tối ưu theo đồ thị tiên quyết SGU"
+    author: "TV1 (Đăng – Tầng mô hình)"
+    date_created: "2026-10-29"
+    milestone: "Mốc 4 – Tuần 4"
+    status: "implemented"
+    artifact_path: null  # Không có file pkl; logic trong src/syllabus_core/pathway/
+    framework: "pure-python"
+    algorithm: "Topological Sort + Greedy Packing"
+    hyperparameters:
+      max_credits_per_term: 20
+    dataset:
+      source: "data/processed/syllabi/*.json (course_code + prerequisites + credits)"
+      courses_count: 54
+    metrics:
+      no_cycle_violations: null    # Kiểm tra bằng test_planner.py
+      topo_order_valid: null
+      credit_limit_violations: null
+      target_violations: 0
+    notes: >
+      Đồ thị tiên quyết tải từ JSON đề cương (CourseGraph).
+      Planner dùng topological sort + greedy packing vào học kỳ theo giới hạn tín chỉ.
+      Xem chi tiết tại notebook 4.0-dd-predict-demo.ipynb và tests/test_planner.py.
+
+metadata:
+  generated_by: "TV1 (Đăng – Tầng mô hình)"
+  last_updated: "2026-10-30"
+  project: "Syllabus RAG – Trường Đại học Sài Gòn"
+  random_seed_global: 42
+  notes: >
+    File này tóm tắt toàn bộ model artifacts của dự án.
+    Cập nhật metrics sau mỗi lần train lại.
+    M1 đã hoàn thiện (TV2). M2/M3 đang trong quá trình huấn luyện (TV1).
+    M4 đã implement, đánh giá qua unit tests.
