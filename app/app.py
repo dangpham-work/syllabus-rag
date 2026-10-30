@@ -1,164 +1,320 @@
-"""Run: python -m streamlit run app/app.py (from the repository root)."""
-from collections import Counter
+"""
+app.py
+Ứng dụng Streamlit demo 3 tab: Hỏi đáp, Lộ trình học, Phân tích đề cương.
+
+Chạy:
+    streamlit run app/app.py
+"""
+
+from __future__ import annotations
+
+import io
 import os
-from pathlib import Path
-import re
 import sys
+from pathlib import Path
 
+import requests
 import streamlit as st
-from dotenv import load_dotenv
 
-ROOT = Path(__file__).resolve().parents[1]
-# Streamlit prepends app/ to sys.path, which can shadow the app package with app.py.
-sys.path = [str(ROOT), *[p for p in sys.path if p != str(ROOT)]]
-from app.api_client import APIClient, Result
+# ---------------------------------------------------------------------------
+# Cấu hình
+# ---------------------------------------------------------------------------
 
-load_dotenv(ROOT / ".env", override=False)
-client = APIClient(os.getenv("API_URL", "http://localhost:8000"))
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
-# Only these courses currently have TV3 sample JSON. No invented course catalog.
-COURSES = {"841020": "Cơ sở lập trình", "841108": "Cấu trúc dữ liệu và giải thuật", "841401": "Giải tích 1"}
-BLOOM = {0: "Ngoài miền nhận thức", 1: "Nhớ", 2: "Hiểu", 3: "Áp dụng", 4: "Phân tích", 5: "Đánh giá", 6: "Sáng tạo"}
-# Semantic field mapping; do not reuse the incorrect numeric labels in mock text.
-SECTIONS = [
-    ("general_info", "Thông tin tổng quát"), ("course_description", "Mô tả học phần"),
-    ("course_objectives", "Mục tiêu học phần"), ("course_learning_outcomes", "Chuẩn đầu ra"),
-    ("course_content", "Nội dung chi tiết"), ("learning_resources", "Học liệu"),
-    ("teaching_schedule", "Hướng dẫn tổ chức dạy học"), ("course_policies", "Quy định"),
-    ("assessment", "Phương pháp đánh giá"), ("course_staff", "Phụ trách học phần"),
-]
+st.set_page_config(
+    page_title="Syllabus RAG — SGU",
+    page_icon="📚",
+    layout="wide",
+)
 
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-def course_label(code):
-    return f"{code} · {COURSES.get(code, 'Môn trong dữ liệu mẫu')}"
-
-
-def show_chunks(data):
-    chunks = data.get("retrieved_chunks", data.get("retrieved", []))
-    for i, chunk in enumerate(chunks, 1):
-        with st.expander(f"Đoạn {i} · {chunk.get('course_code', '')} · {chunk.get('section', '')}"):
-            st.write(chunk.get("content", chunk.get("text", "")))
-            st.caption(f"Mã đoạn: {chunk.get('chunk_id', '')}")
+def api_get(endpoint: str, **kwargs):
+    try:
+        r = requests.get(f"{API_URL}{endpoint}", timeout=10, **kwargs)
+        r.raise_for_status()
+        return r.json(), None
+    except requests.exceptions.ConnectionError:
+        return None, "❌ Không kết nối được API. Hãy chắc chắn uvicorn đang chạy."
+    except Exception as e:
+        return None, f"❌ Lỗi: {e}"
 
 
-st.set_page_config(page_title="Syllabus SGU", page_icon="📚", layout="wide")
-st.title("Tra cứu đề cương học phần")
-st.caption("SGU · Kỹ thuật phần mềm")
-st.warning("Bản thử nghiệm dùng API mock. Kết quả là dữ liệu minh họa, chưa dùng để quyết định học tập.")
+def api_post(endpoint: str, json_data=None, files=None, timeout=30):
+    try:
+        r = requests.post(
+            f"{API_URL}{endpoint}",
+            json=json_data,
+            files=files,
+            timeout=timeout,
+        )
+        if r.status_code == 503:
+            data = r.json()
+            return data, "⚠️ LLM không khả dụng — hiển thị đoạn truy xuất."
+        r.raise_for_status()
+        return r.json(), None
+    except requests.exceptions.ConnectionError:
+        return None, "❌ Không kết nối được API. Hãy chắc chắn uvicorn đang chạy."
+    except Exception as e:
+        return None, f"❌ Lỗi: {e}"
+
+
+BLOOM_COLORS = {
+    0: "#95a5a6", 1: "#3498db", 2: "#2ecc71",
+    3: "#f39c12", 4: "#e74c3c", 5: "#9b59b6", 6: "#1abc9c",
+}
+BLOOM_NAMES = {
+    0: "Ngoài miền", 1: "Nhớ", 2: "Hiểu",
+    3: "Áp dụng", 4: "Phân tích", 5: "Đánh giá", 6: "Sáng tạo",
+}
+
+
+# ---------------------------------------------------------------------------
+# Sidebar
+# ---------------------------------------------------------------------------
+
 with st.sidebar:
-    st.header("Kết nối")
-    st.caption(f"API: {client.base_url}")
-    if st.button("Kiểm tra API", key="health"):
-        result = client.request("/health", method="GET")
-        if result.error:
-            st.error(result.error)
-        else:
-            st.success(f"API sẵn sàng · {result.data.get('version', '')}")
-    st.caption("Có 3 môn mẫu. Danh sách đầy đủ sẽ được bổ sung khi dữ liệu TV2 sẵn sàng.")
+    st.image("https://www.sgu.edu.vn/sites/default/files/logo_sgu.png", width=100)
+    st.title("Syllabus RAG")
+    st.caption("Hệ thống phân tích đề cương SGU")
+    st.markdown("---")
 
-qa, pathway, analysis = st.tabs(["Hỏi đáp", "Lộ trình", "Phân tích đề cương"])
-with qa:
-    st.subheader("Bạn muốn tìm hiểu điều gì?")
+    # Health check
+    health, err = api_get("/health")
+    if health:
+        st.success(f"🟢 API sẵn sàng — v{health.get('version', '?')}")
+        models = health.get("models_loaded", [])
+        if models:
+            st.caption(f"Models: {', '.join(models)}")
+    else:
+        st.error("🔴 API chưa kết nối")
+        st.caption(err or "")
+
+    st.markdown("---")
+    st.markdown(f"**API URL:** `{API_URL}`")
+    st.markdown("**Nhóm:** syllabus-rag | SGU 2026")
+
+
+# ---------------------------------------------------------------------------
+# Tabs
+# ---------------------------------------------------------------------------
+
+tab1, tab2, tab3 = st.tabs(["💬 Hỏi đáp", "🗺️ Lộ trình học", "📄 Phân tích đề cương"])
+
+
+# ============================================================
+# Tab 1 — Hỏi đáp
+# ============================================================
+
+with tab1:
+    st.header("💬 Hỏi đáp về đề cương môn học")
+    st.caption("Đặt câu hỏi tiếng Việt — hệ thống trả lời có trích dẫn nguồn từ đề cương SGU.")
+
     with st.form("ask_form"):
-        selected = st.selectbox("Lọc theo môn", [None, *COURSES], format_func=lambda c: "Tất cả môn (mock)" if c is None else course_label(c), key="ask_course")
-        question = st.text_area("Câu hỏi", placeholder="Môn Cơ sở lập trình có yêu cầu học trước không?", key="question")
-        send = st.form_submit_button("Gửi câu hỏi", key="ask_submit")
-    if send:
-        st.session_state.pop("ask_result", None)
-        if len(question.strip()) < 2:
-            st.error("Vui lòng nhập câu hỏi có ít nhất 2 ký tự.")
-        else:
-            with st.spinner("Đang lấy câu trả lời…"):
-                st.session_state.ask_result = (question.strip(), client.ask(question.strip(), selected))
-    if "ask_result" in st.session_state:
-        submitted_question, result = st.session_state.ask_result
-        st.caption(f"Kết quả cho câu đã gửi: {submitted_question}")
-        if result.error:
-            st.error(result.error)
-        else:
-            st.write(result.data.get("answer", "API chưa trả câu trả lời."))
-            st.markdown("**Nguồn trích dẫn**")
-            for citation in result.data.get("citations", []):
-                st.caption(f"{citation.get('course_code', '')} · {citation.get('section', '')}")
-                st.write(citation.get("quote", ""))
-        show_chunks(result.data)
+        question = st.text_area(
+            "Câu hỏi của bạn",
+            placeholder="Ví dụ: Môn Công nghệ phần mềm có những chuẩn đầu ra nào?",
+            height=100,
+        )
+        course_filter = st.text_input(
+            "Lọc theo mã môn (tuỳ chọn)",
+            placeholder="Ví dụ: 841047",
+        )
+        submitted = st.form_submit_button("🔍 Tìm kiếm", use_container_width=True)
 
-with pathway:
-    st.subheader("Phác lộ trình học")
-    st.info("Lộ trình hiện là mẫu cố định từ backend; chưa tính theo lựa chọn của bạn.")
-    with st.form("path_form"):
-        targets = st.multiselect("Môn đích", list(COURSES), format_func=course_label, key="targets")
-        completed = st.multiselect("Môn đã hoàn thành", list(COURSES), format_func=course_label, key="completed")
-        credits = st.number_input("Tín chỉ tối đa mỗi kỳ", min_value=1, max_value=30, value=20, step=1)
-        send_path = st.form_submit_button("Xem lộ trình mẫu", key="path_submit")
-    if send_path:
-        st.session_state.pop("path_result", None)
-        if not targets:
-            st.error("Chọn ít nhất một môn đích.")
-        elif set(targets) & set(completed):
-            st.error("Môn đích đang trùng môn đã hoàn thành. Hãy điều chỉnh lựa chọn.")
+    if submitted:
+        if not question.strip():
+            st.warning("Vui lòng nhập câu hỏi.")
         else:
-            with st.spinner("Đang lấy kế hoạch…"):
-                st.session_state.path_result = (", ".join(targets), client.learning_path(targets, completed, int(credits)))
-    if "path_result" in st.session_state:
-        submitted_targets, result = st.session_state.path_result
-        st.caption(f"Môn đích đã gửi: {submitted_targets}")
-        if result.error:
-            st.error(result.error)
-        else:
-            for term in result.data.get("plan", []):
-                st.markdown(f"**Học kỳ {term.get('semester')} · {term.get('total_credits', 0)} tín chỉ**")
-                st.write(" · ".join(course_label(code) for code in term.get("courses", [])))
-            for warning in result.data.get("warnings", []):
-                st.warning(warning)
-            for suggestion in result.data.get("soft_suggestions", []):
-                st.info(suggestion)
+            with st.spinner("Đang tìm kiếm và sinh câu trả lời..."):
+                payload = {"question": question}
+                if course_filter.strip():
+                    payload["course_filter"] = course_filter.strip()
+                result, err = api_post("/ask", json_data=payload)
 
-with analysis:
-    st.subheader("Xem cấu trúc đề cương")
-    st.caption("Mock chọn dữ liệu theo mã trong tên tệp. Thử 841020.pdf, 841108.pdf hoặc 841401.pdf; nội dung PDF chưa được OCR.")
-    with st.form("analyze_form"):
-        pdf = st.file_uploader("Chọn đề cương PDF (tối đa 10 MB)", type=["pdf"], max_upload_size=10, key="pdf")
-        analyze = st.form_submit_button("Phân tích PDF", key="analyze_submit")
-    if analyze:
-        st.session_state.pop("analysis_result", None)
-        if pdf is None:
-            st.error("Vui lòng chọn PDF trước khi phân tích.")
-        elif pdf.size > 10 * 1024 * 1024:
-            st.error("Tệp vượt 10 MB. Chọn tệp nhỏ hơn.")
-        elif not pdf.getvalue().startswith(b"%PDF-"):
-            st.error("Tệp rỗng hoặc không có định dạng PDF.")
+            if err and result is None:
+                st.error(err)
+            elif result:
+                if err:
+                    st.warning(err)
+
+                # Câu trả lời
+                st.markdown("### 📝 Câu trả lời")
+                answer = result.get("answer", "Không có câu trả lời.")
+                st.markdown(answer)
+
+                provider = result.get("provider_used", "")
+                latency = result.get("latency_ms", 0)
+                st.caption(f"Provider: `{provider}` | Thời gian: {latency}ms")
+
+                # Citations
+                citations = result.get("citations", [])
+                if citations:
+                    st.markdown("### 📌 Nguồn trích dẫn")
+                    for c in citations:
+                        with st.expander(f"{c.get('ref', '')} — {c.get('course_name', '')} | {c.get('section', '')}"):
+                            st.write(c.get("text_snippet", ""))
+                            st.caption(f"Mã môn: `{c.get('course_code', '')}` | chunk: `{c.get('chunk_id', '')}`")
+
+                # Retrieved chunks
+                chunks = result.get("retrieved_chunks", [])
+                if chunks:
+                    with st.expander(f"📦 Xem {len(chunks)} đoạn đã truy xuất"):
+                        for chunk in chunks:
+                            st.markdown(f"**#{chunk.get('rank')} | {chunk.get('course_name')} — {chunk.get('section')}** (score: {chunk.get('score', 0):.3f})")
+                            st.text(chunk.get("text", "")[:300])
+                            st.divider()
+
+
+# ============================================================
+# Tab 2 — Lộ trình học
+# ============================================================
+
+with tab2:
+    st.header("🗺️ Gợi ý lộ trình học")
+    st.caption("Chọn môn đích và đánh dấu các môn đã học — hệ thống lên kế hoạch theo học kỳ.")
+
+    col_a, col_b = st.columns([1, 1])
+
+    with col_a:
+        target_course = st.text_input(
+            "🎯 Môn học đích",
+            placeholder="Ví dụ: 841470",
+            help="Nhập mã môn học bạn muốn đạt được",
+        )
+
+    with col_b:
+        completed_raw = st.text_area(
+            "✅ Môn đã học (mỗi mã trên một dòng hoặc phân cách bằng dấu phẩy)",
+            placeholder="841020\n841401\n841108",
+            height=100,
+        )
+
+    if st.button("📋 Lên lộ trình", use_container_width=True):
+        if not target_course.strip():
+            st.warning("Vui lòng nhập mã môn đích.")
         else:
-            match = re.search(r"\b(84\d{4})\b", pdf.name)
-            expected = match.group(1) if match else None
-            if expected not in COURSES:
-                st.error("Mock chưa hỗ trợ tên tệp này. Chọn PDF có mã 841020, 841108 hoặc 841401 trong tên để tránh trả nhầm môn.")
-            else:
-                with st.spinner("Đang gửi PDF…"):
-                    result = client.analyze(pdf.name, pdf.getvalue())
-                    if not result.error and result.data.get("course_code") != expected:
-                        result = Result(error="API trả môn khác với tệp đã gửi. Chưa hiển thị kết quả; cần TV3 kiểm tra.")
-                    st.session_state.analysis_result = (pdf.name, result)
-    if "analysis_result" in st.session_state:
-        filename, result = st.session_state.analysis_result
-        st.caption(f"Kết quả cho tệp đã gửi: {filename}")
-        if result.error:
-            st.error(result.error)
-        else:
-            data = result.data
-            st.markdown(f"**{data.get('course_name', '')} · {data.get('course_code', '')}**")
-            st.info("Các mục dưới đây được sắp theo mẫu SGU. Nội dung mock còn có số mục khác; mục Phụ trách học phần chưa có trường tương ứng trong API.")
-            sections = data.get("sections", {})
-            for index, (key, title) in enumerate(SECTIONS, 1):
-                content = sections.get(key)
-                with st.expander(f"{index}. {title} · {'Có dữ liệu mẫu' if content else 'API chưa cung cấp'}"):
-                    st.write(content or "Chưa đủ dữ liệu để kết luận mục này thiếu trong PDF.")
-            if data.get("missing_sections"):
-                st.warning("API báo thiếu mục: " + ", ".join(map(str, data["missing_sections"])))
-            clos = data.get("clos", [])
-            if clos:
-                st.markdown("**Chuẩn đầu ra học phần**")
-                st.dataframe([{"CLO": c.get("clo_id"), "Nội dung": c.get("text"), "Bloom": BLOOM.get(c.get("bloom_level"), "Chưa phân loại"), "Độ tin cậy": c.get("confidence")} for c in clos], hide_index=True)
-                counts = Counter(BLOOM[c["bloom_level"]] for c in clos if c.get("bloom_level") in BLOOM)
-                if counts:
-                    st.bar_chart(dict(Mức=list(counts), Số_CLO=list(counts.values())), x="Mức", y="Số_CLO")
+            # Parse completed courses
+            completed = []
+            for item in completed_raw.replace(",", "\n").split("\n"):
+                item = item.strip()
+                if item:
+                    completed.append(item)
+
+            with st.spinner("Đang tính toán lộ trình..."):
+                result, err = api_post("/learning-path", json_data={
+                    "target_course": target_course.strip(),
+                    "completed_courses": completed,
+                })
+
+            if err and result is None:
+                st.error(err)
+            elif result:
+                plan = result.get("plan", [])
+                warnings = result.get("warnings", [])
+                suggestions = result.get("soft_suggestions", [])
+
+                st.success(
+                    f"✅ Kế hoạch: **{result.get('total_courses', 0)} môn** "
+                    f"| **{result.get('total_credits', 0)} tín chỉ** "
+                    f"| **{len(plan)} học kỳ**"
+                )
+
+                if warnings:
+                    for w in warnings:
+                        st.warning(w)
+
+                if suggestions:
+                    st.info("💡 Gợi ý:\n" + "\n".join(f"- {s}" for s in suggestions))
+
+                # Hiển thị kế hoạch theo học kỳ
+                for term in plan:
+                    with st.expander(f"📅 Học kỳ {term['term']} — {term['total_credits']} tín chỉ", expanded=True):
+                        cols = st.columns(len(term["courses"]) if term["courses"] else 1)
+                        for i, course in enumerate(term["courses"]):
+                            with cols[i % len(cols)]:
+                                st.markdown(
+                                    f"""
+                                    <div style="padding:10px;border-radius:8px;background:#f0f2f6;margin:4px">
+                                        <b>{course['name']}</b><br/>
+                                        <code>{course['code']}</code> | {course['credits']} TC
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True,
+                                )
+
+
+# ============================================================
+# Tab 3 — Phân tích đề cương
+# ============================================================
+
+with tab3:
+    st.header("📄 Phân tích đề cương PDF")
+    st.caption("Upload file PDF đề cương — hệ thống trích xuất 10 mục và phân loại mức Bloom cho mỗi CLO.")
+
+    uploaded = st.file_uploader("Chọn file PDF đề cương", type=["pdf"])
+
+    if uploaded is not None:
+        st.info(f"📎 File: **{uploaded.name}** ({uploaded.size // 1024} KB)")
+
+        if st.button("🔬 Phân tích", use_container_width=True):
+            with st.spinner("Đang xử lý PDF (OCR → trích xuất → phân loại Bloom)..."):
+                result, err = api_post(
+                    "/analyze-syllabus",
+                    files={"file": (uploaded.name, uploaded.getvalue(), "application/pdf")},
+                    timeout=60,
+                )
+
+            if err and result is None:
+                st.error(err)
+            elif result:
+                # Header
+                st.success(
+                    f"✅ **{result.get('course_name', 'N/A')}** | "
+                    f"Mã: `{result.get('course_code', 'N/A')}` | "
+                    f"{result.get('credits', 0)} tín chỉ | "
+                    f"Xử lý trong {result.get('processing_time_s', 0):.1f}s"
+                )
+
+                # Missing sections
+                missing = result.get("missing_sections", [])
+                if missing:
+                    st.warning(f"⚠️ Thiếu {len(missing)} mục: {', '.join(missing)}")
+
+                # Sections table
+                sections = result.get("sections", {})
+                if sections:
+                    st.markdown("### 📋 10 mục đề cương")
+                    for i, (sec, text) in enumerate(sections.items(), 1):
+                        with st.expander(f"Mục {i}: {sec}", expanded=(i <= 2)):
+                            st.write(text[:500] + ("..." if text and len(text) > 500 else ""))
+
+                # CLO table + Bloom chart
+                clos = result.get("clos", [])
+                if clos:
+                    st.markdown("### 🎯 Chuẩn đầu ra (CLO) và mức Bloom")
+
+                    # Table
+                    import pandas as pd
+                    df_clo = pd.DataFrame([{
+                        "CLO": c.get("clo_id", f"CLO{i+1}"),
+                        "Nội dung": c.get("text", "")[:100],
+                        "Mức Bloom": c.get("bloom_level", "?"),
+                        "Tên mức": c.get("bloom_name", "?"),
+                        "Tin cậy": f"{c.get('bloom_confidence', 0):.0%}" if c.get("bloom_confidence") else "N/A",
+                    } for i, c in enumerate(clos)])
+                    st.dataframe(df_clo, use_container_width=True)
+
+                    # Bloom distribution chart
+                    from collections import Counter
+                    bloom_counts = Counter(c.get("bloom_level") for c in clos if c.get("bloom_level") is not None)
+                    chart_data = pd.DataFrame([
+                        {"Mức Bloom": f"{lvl} - {BLOOM_NAMES.get(lvl, '')}", "Số CLO": cnt}
+                        for lvl, cnt in sorted(bloom_counts.items())
+                    ])
+                    if not chart_data.empty:
+                        st.markdown("**Phân bố mức Bloom:**")
+                        st.bar_chart(chart_data.set_index("Mức Bloom"))

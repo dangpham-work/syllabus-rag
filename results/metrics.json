@@ -81,10 +81,150 @@
       "max_latency_seconds": 0.176
     }
   },
+  "m2_bloom": {
+    "description": "Phân loại CLO vào 7 lớp Bloom Anderson & Krathwohl (0-6)",
+    "target_macro_f1": 0.75,
+    "classes_count": 7,
+    "classes": [
+      "0: Ngoài miền",
+      "1: Nhớ",
+      "2: Hiểu",
+      "3: Áp dụng",
+      "4: Phân tích",
+      "5: Đánh giá",
+      "6: Sáng tạo"
+    ],
+    "cv_strategy": "5-fold theo mã môn (StratifiedGroupKFold)",
+    "experiments": {
+      "b0_rule_baseline": {
+        "description": "Rule-based: tra danh sách động từ hành động",
+        "cv_macro_f1_mean": 0.0,
+        "cv_macro_f1_std": 0.0,
+        "status": "pending - chạy notebook 2.0"
+      },
+      "b1_tfidf_logreg": {
+        "description": "TF-IDF (từ 1-2 + ký tự 2-4) + LogReg, GridSearchCV C",
+        "cv_macro_f1_mean": 0.0,
+        "cv_macro_f1_std": 0.0,
+        "best_C": null,
+        "status": "pending - chạy notebook 2.0"
+      },
+      "b2_e5_embedding": {
+        "description": "multilingual-e5-small embedding + LogReg head",
+        "cv_macro_f1_mean": 0.0,
+        "cv_macro_f1_std": 0.0,
+        "status": "pending - chạy notebook 2.1"
+      }
+    },
+    "notes": "Cập nhật sau khi chạy notebooks 2.0 và 2.1"
+  },
+  "m3_retrieval": {
+    "description": "So sánh 6 cấu hình retrieval trên synthetic 80 QA pairs",
+    "target_recall_at_5": 0.85,
+    "embedding_model": "intfloat/multilingual-e5-small",
+    "configs": {
+      "bm25_only": {
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr_at_10": 0.0,
+        "status": "pending - chạy notebook 3.0"
+      },
+      "dense_only": {
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr_at_10": 0.0,
+        "status": "pending - chạy notebook 3.0"
+      },
+      "rrf": {
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr_at_10": 0.0,
+        "status": "pending - chạy notebook 3.0"
+      },
+      "rrf_logreg": {
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr_at_10": 0.0,
+        "status": "pending - chạy notebook 3.1"
+      },
+      "rrf_lambdamart": {
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr_at_10": 0.0,
+        "status": "pending - chạy notebook 3.1"
+      },
+      "rrf_crossencoder": {
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "recall_at_10": 0.0,
+        "mrr_at_10": 0.0,
+        "status": "pending - chạy notebook 3.1 (yêu cầu GPU)"
+      }
+    },
+    "notes": "Cập nhật sau khi chạy notebooks 3.0 và 3.1"
+  },
+  "m3_rag": {
+    "description": "Đánh giá RAG pipeline end-to-end",
+    "target_faithfulness": 0.90,
+    "eval_questions": 50,
+    "metrics": {
+      "faithfulness": 0.0,
+      "answer_relevance": 0.0,
+      "context_recall": 0.0,
+      "out_of_scope_detection_accuracy": 0.0,
+      "avg_latency_seconds": 0.0
+    },
+    "status": "pending - chạy notebook 3.2",
+    "notes": "Faithfulness đánh giá bằng LLM-as-judge hoặc manual review 50 câu"
+  },
+  "m4_planner": {
+    "description": "Lập kế hoạch học tập tối ưu theo đồ thị tiên quyết SGU",
+    "algorithm": "Topological Sort + Greedy Packing",
+    "max_credits_per_term": 20,
+    "test_results": {
+      "no_cycle_violations": null,
+      "topo_order_valid": null,
+      "credit_limit_violations": null,
+      "random_queries_30_violations": null,
+      "status": "pending - chạy pytest tests/test_planner.py"
+    },
+    "notes": "M4 không có model pkl, đánh giá qua unit tests"
+  },
+  "eda": {
+    "description": "Số liệu khám phá dữ liệu corpus đề cương SGU",
+    "corpus_stats": {
+      "total_syllabi": 0,
+      "total_clos": 0,
+      "avg_clos_per_syllabus": 0.0,
+      "avg_clo_length_tokens": 0.0,
+      "total_credits": 0,
+      "bloom_distribution": {
+        "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0
+      },
+      "missing_sections_rate": 0.0,
+      "avg_ocr_confidence": 0.0,
+      "inter_annotator_kappa": 0.0
+    },
+    "status": "pending - chạy notebook 1.1-dd-eda.ipynb",
+    "notes": "Cập nhật sau khi chạy EDA notebook"
+  },
   "metadata": {
-    "author": "TV2 (Long - Tầng dữ liệu)",
-    "date": "2026-10-27",
-    "milestone": "Mốc 3 - Tuần 3",
-    "status": "completed"
+    "author": "TV1 (Đăng – Tầng mô hình) + TV2 (Long – Tầng dữ liệu)",
+    "last_updated": "2026-10-30",
+    "milestone": "Mốc 4 – Tuần 4",
+    "project": "Syllabus RAG – Trường Đại học Sài Gòn",
+    "random_seed_global": 42,
+    "notes": "M1 hoàn thành (TV2). M2/M3/M4 đang implement (TV1). Cập nhật metrics sau khi chạy notebooks."
   }
 }

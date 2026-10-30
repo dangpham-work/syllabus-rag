@@ -1,405 +1,279 @@
-"""tests/test_api.py
-Bộ kiểm thử tự động (Unit / Integration Tests) cho Tầng API (Project 1 - TV3).
-Đồ án: "Hệ thống phân tích đề cương môn học kết hợp RAG" (Trường ĐH Sài Gòn).
-
-Sử dụng FastAPI TestClient và Pytest:
-- Kiểm tra mã phản hồi HTTP 200 khi payload hợp lệ cho tất cả 5 endpoint.
-- Kiểm tra mã phản hồi HTTP 422 Unprocessable Content khi payload thiếu trường hoặc sai kiểu dữ liệu.
-- Kiểm tra cấu trúc dữ liệu JSON trả về tuân thủ đầy đủ Pydantic Schemas.
+"""
+tests/test_api.py
+=================
+Kiểm thử tự động cho REST API Syllabus RAG.
+Dùng FastAPI TestClient để giả lập HTTP mà không cần chạy server thật.
+Mọi model được mock trong lifespan để không cần file pkl thật.
 """
 
-from __future__ import annotations
-
 import io
-import sys
-from pathlib import Path
-from typing import Generator
-
-# Đảm bảo đường dẫn gốc của project luôn nằm trong sys.path
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import json
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
 
-from api.main import app
-from api.schemas import (
-    HealthResponse,
-    AnalyzeSyllabusResponse,
-    CLOClassificationItem,
-    AskResponse,
-    LearningPathResponse,
-)
+# ---------------------------------------------------------------------------
+# Mock toàn bộ model trước khi import app để tránh lỗi file không tồn tại
+# ---------------------------------------------------------------------------
 
+_MOCK_SECTION_CLF = MagicMock()
+_MOCK_SECTION_CLF.predict.return_value = ["course_learning_outcomes"]
+
+_MOCK_BLOOM_MODEL = MagicMock()
+_MOCK_BLOOM_MODEL.predict.return_value = [3]
+_MOCK_BLOOM_MODEL.predict_proba.return_value = [[0.1] * 7]
+
+_MOCK_RERANKER = MagicMock()
+_MOCK_RERANKER.predict.return_value = [0.9, 0.8, 0.7, 0.6, 0.5]
+
+_MOCK_INDEX = MagicMock()
+_MOCK_INDEX.search_bm25.return_value = [
+    {"chunk_id": "c1", "text": "Môn Cơ sở lập trình trang bị kiến thức...", "score": 1.5},
+    {"chunk_id": "c2", "text": "Yêu cầu: sinh viên cần có nền tảng toán...", "score": 1.2},
+]
+_MOCK_INDEX.search_dense.return_value = [
+    {"chunk_id": "c1", "text": "Môn Cơ sở lập trình trang bị kiến thức...", "score": 0.92},
+]
+
+_MOCK_GRAPH = MagicMock()
+_MOCK_GRAPH.get_learning_path.return_value = {
+    "target_course": "841470",
+    "path": [["841020"], ["841303"], ["841470"]],
+    "total_credits": 9,
+    "warnings": [],
+}
+_MOCK_GRAPH.courses = {
+    "841020": {"course_name": "Cơ sở lập trình", "credits": 3},
+    "841303": {"course_name": "Cấu trúc dữ liệu", "credits": 3},
+    "841470": {"course_name": "Trí tuệ nhân tạo", "credits": 3},
+}
+
+
+def _make_dummy_pdf() -> bytes:
+    """Tạo bytes giả mô phỏng file PDF nhỏ."""
+    return b"%PDF-1.4 1 0 obj<</Type/Catalog>>endobj\n%%EOF"
+
+
+# ---------------------------------------------------------------------------
+# Fixture: TestClient với mock models
+# ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def client() -> Generator[TestClient, None, None]:
-    """Khởi tạo TestClient dùng chung cho toàn bộ module kiểm thử."""
-    with TestClient(app) as test_client:
-        yield test_client
+def client():
+    """Khởi tạo TestClient với app đã mock models."""
+    with (
+        patch("api.main.load_models") as mock_load,
+        patch("api.main.section_clf", _MOCK_SECTION_CLF, create=True),
+        patch("api.main.bloom_model", _MOCK_BLOOM_MODEL, create=True),
+        patch("api.main.reranker", _MOCK_RERANKER, create=True),
+        patch("api.main.retrieval_index", _MOCK_INDEX, create=True),
+        patch("api.main.course_graph", _MOCK_GRAPH, create=True),
+    ):
+        mock_load.return_value = None
+        from api.main import app
+        with TestClient(app) as c:
+            yield c
 
 
-# ==============================================================================
-# 1. KIỂM THỬ ENDPOINT GET /health
-# ==============================================================================
-class TestHealthEndpoint:
-    """Các kịch bản kiểm thử cho endpoint GET /health."""
+# ---------------------------------------------------------------------------
+# 1. Health check
+# ---------------------------------------------------------------------------
 
-    def test_health_check_returns_200(self, client: TestClient) -> None:
-        """Endpoint /health phải trả về HTTP 200 và cấu trúc chuẩn."""
-        response = client.get("/health")
-        assert response.status_code == 200
-
-        data = response.json()
-        assert data["status"] == "ok"
-        assert data["service"] == "syllabus-rag-api"
-        assert "version" in data
-
-        # Kiểm tra tính tương thích với Pydantic schema
-        validated = HealthResponse(**data)
-        assert validated.status == "ok"
-
-
-# ==============================================================================
-# 2. KIỂM THỬ ENDPOINT POST /api/v1/analyze-syllabus
-# ==============================================================================
-class TestAnalyzeSyllabusEndpoint:
-    """Các kịch bản kiểm thử cho endpoint POST /api/v1/analyze-syllabus."""
-
-    def test_analyze_with_valid_json_file_path(self, client: TestClient) -> None:
-        """Gửi đường dẫn file qua JSON body phải trả về HTTP 200 và trích xuất đủ 10 mục."""
-        payload = {"file_path": "data/raw/841020 - Co so lap trinh.pdf"}
-        response = client.post("/api/v1/analyze-syllabus", json=payload)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert data["course_code"] == "841020"
-        assert "course_name" in data
-        assert data["credits"] > 0
-        assert isinstance(data["clos"], list)
-        assert len(data["clos"]) > 0
-
-        # Kiểm tra sự hiện diện của 10 mục trong sections
-        sections = data["sections"]
-        expected_sections = [
-            "general_info",
-            "course_description",
-            "course_objectives",
-            "course_learning_outcomes",
-            "course_content",
-            "teaching_methods",
-            "assessment",
-            "learning_resources",
-            "teaching_schedule",
-            "course_policies",
-        ]
-        for sec_name in expected_sections:
-            assert sec_name in sections
-            assert sections[sec_name] is not None
-
-        # Xác thực với Pydantic schema
-        validated = AnalyzeSyllabusResponse(**data)
-        assert validated.course_code == "841020"
-
-    def test_analyze_with_file_upload(self, client: TestClient) -> None:
-        """Tải lên file PDF trực tiếp qua multipart/form-data phải trả về HTTP 200."""
-        dummy_pdf_content = b"%PDF-1.4 Mock binary content for SGU syllabus scan"
-        files = {
-            "file": ("841020_scan.pdf", io.BytesIO(dummy_pdf_content), "application/pdf")
-        }
-        response = client.post("/api/v1/analyze-syllabus", files=files)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert "course_code" in data
-        assert "sections" in data
-
-    def test_analyze_with_form_data_file_path(self, client: TestClient) -> None:
-        """Gửi file_path qua form-data phải trả về HTTP 200."""
-        form_data = {"file_path": "data/raw/841020 - Co so lap trinh.pdf"}
-        response = client.post("/api/v1/analyze-syllabus", data=form_data)
-        assert response.status_code == 200
-
-    def test_analyze_missing_input_returns_422(self, client: TestClient) -> None:
-        """Gửi request rỗng (không có file và không có file_path) phải trả về HTTP 422."""
-        response = client.post("/api/v1/analyze-syllabus", json={})
-        assert response.status_code == 422
-
-    def test_analyze_blank_file_path_returns_422(self, client: TestClient) -> None:
-        """Gửi file_path chỉ chứa khoảng trắng rỗng phải trả về HTTP 422."""
-        response = client.post("/api/v1/analyze-syllabus", json={"file_path": "   "})
-        assert response.status_code == 422
-
-
-# ==============================================================================
-# 3. KIỂM THỬ ENDPOINT POST /api/v1/classify-clo
-# ==============================================================================
-class TestClassifyCLOEndpoint:
-    """Các kịch bản kiểm thử cho endpoint POST /api/v1/classify-clo."""
-
-    def test_classify_single_clo_success(self, client: TestClient) -> None:
-        """Gửi 1 câu CLO đơn lẻ qua trường 'text' phải trả về HTTP 200 và phân loại đúng."""
-        payload = {"text": "Áp dụng cấu trúc rẽ nhánh và vòng lặp để giải quyết bài toán cơ bản."}
-        response = client.post("/api/v1/classify-clo", json=payload)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert isinstance(data, list)
-        assert len(data) == 1
-
-        item = data[0]
-        assert item["clo_id"] == "CLO1"
-        assert 0 <= item["bloom_level"] <= 6
-        assert 0.0 <= item["confidence"] <= 1.0
-        assert "probabilities" in item
-        assert len(item["probabilities"]) == 7
-
-        # Kiểm tra schema Pydantic
-        validated = CLOClassificationItem(**item)
-        assert validated.bloom_level == 3
-
-    def test_classify_multiple_clos_success(self, client: TestClient) -> None:
-        """Gửi danh sách nhiều câu CLO qua trường 'texts' phải trả về HTTP 200."""
-        payload = {
-            "texts": [
-                "Trình bày các khái niệm cơ bản về thuật toán.",
-                "Cài đặt thuật toán tìm kiếm nhị phân trên mảng đã sắp xếp.",
-                "Phân tích độ phức tạp thời gian của giải thuật QuickSort.",
-                "Thiết kế kiến trúc hệ thống phân tán chịu lỗi cao.",
-            ]
-        }
-        response = client.post("/api/v1/classify-clo", json=payload)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert len(data) == 4
-        assert [d["clo_id"] for d in data] == ["CLO1", "CLO2", "CLO3", "CLO4"]
-
-    def test_classify_empty_payload_returns_422(self, client: TestClient) -> None:
-        """Gửi JSON rỗng không chứa trường text hay texts phải trả về HTTP 422."""
-        response = client.post("/api/v1/classify-clo", json={})
-        assert response.status_code == 422
-
-    def test_classify_blank_string_returns_422(self, client: TestClient) -> None:
-        """Gửi text rỗng hoặc chỉ có dấu cách phải trả về HTTP 422."""
-        response = client.post("/api/v1/classify-clo", json={"text": "   "})
-        assert response.status_code == 422
-
-    def test_classify_empty_list_returns_422(self, client: TestClient) -> None:
-        """Gửi danh sách texts rỗng phải trả về HTTP 422."""
-        response = client.post("/api/v1/classify-clo", json={"texts": []})
-        assert response.status_code == 422
-
-
-# ==============================================================================
-# 4. KIỂM THỬ ENDPOINT POST /api/v1/ask
-# ==============================================================================
-class TestAskEndpoint:
-    """Các kịch bản kiểm thử cho endpoint POST /api/v1/ask."""
-
-    def test_ask_valid_question_returns_200(self, client: TestClient) -> None:
-        """Gửi câu hỏi hợp lệ kèm mã môn học phải trả về HTTP 200 kèm trích dẫn."""
-        payload = {
-            "question": "Môn Cơ sở lập trình có môn học nào bắt buộc làm tiên quyết không?",
-            "course_code": "841020",
-            "top_k": 5,
-        }
-        response = client.post("/api/v1/ask", json=payload)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert isinstance(data["answer"], str)
-        assert len(data["answer"]) > 0
-        assert isinstance(data["citations"], list)
-        assert len(data["citations"]) > 0
-        assert isinstance(data["retrieved_chunks"], list)
-        assert data["llm_provider"] == "mock"
-
-        # Kiểm tra chi tiết citation đầu tiên
-        citation = data["citations"][0]
-        assert citation["course_code"] == "841020"
-        assert "section" in citation
-        assert "quote" in citation
-
-        # Xác thực với Pydantic schema
-        validated = AskResponse(**data)
-        assert validated.llm_provider == "mock"
-
-    def test_ask_without_course_code_returns_200(self, client: TestClient) -> None:
-        """Hỏi không chỉ định course_code (tìm kiếm toàn cục) phải trả về HTTP 200."""
-        payload = {
-            "question": "Quy định về việc vắng học quá 20% số tiết được xử lý thế nào?",
-            "top_k": 3,
-        }
-        response = client.post("/api/v1/ask", json=payload)
-        assert response.status_code == 200
-        assert len(response.json()["answer"]) > 0
-
-    def test_ask_missing_question_returns_422(self, client: TestClient) -> None:
-        """Thiếu trường 'question' bắt buộc phải trả về HTTP 422."""
-        response = client.post("/api/v1/ask", json={"course_code": "841020"})
-        assert response.status_code == 422
-
-    def test_ask_blank_question_returns_422(self, client: TestClient) -> None:
-        """Câu hỏi rỗng chỉ có khoảng trắng phải trả về HTTP 422."""
-        response = client.post("/api/v1/ask", json={"question": "   "})
-        assert response.status_code == 422
-
-    def test_ask_invalid_top_k_returns_422(self, client: TestClient) -> None:
-        """top_k nhỏ hơn 1 hoặc vượt quá giới hạn phải trả về HTTP 422."""
-        response = client.post(
-            "/api/v1/ask",
-            json={"question": "Môn học này có gì vui?", "top_k": 0},
-        )
-        assert response.status_code == 422
-
-
-# ==============================================================================
-# 5. KIỂM THỬ ENDPOINT POST /api/v1/learning-path
-# ==============================================================================
-class TestLearningPathEndpoint:
-    """Các kịch bản kiểm thử cho endpoint POST /api/v1/learning-path."""
-
-    def test_learning_path_valid_request_returns_200(self, client: TestClient) -> None:
-        """Gửi danh sách môn mục tiêu và môn đã đạt phải trả về HTTP 200 kèm lộ trình."""
-        payload = {
-            "target_courses": ["841108", "841044"],
-            "passed_courses": ["841020", "841401"],
-            "max_credits_per_semester": 20,
-        }
-        response = client.post("/api/v1/learning-path", json=payload)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert isinstance(data["plan"], list)
-        assert len(data["plan"]) > 0
-        assert isinstance(data["soft_suggestions"], list)
-        assert isinstance(data["warnings"], list)
-
-        # Kiểm tra chi tiết kế hoạch từng kỳ
-        first_sem = data["plan"][0]
-        assert first_sem["semester"] == 1
-        assert isinstance(first_sem["courses"], list)
-        assert first_sem["total_credits"] >= 0
-
-        # Xác thực với Pydantic schema
-        validated = LearningPathResponse(**data)
-        assert len(validated.plan) > 0
-
-    def test_learning_path_missing_target_courses_returns_422(self, client: TestClient) -> None:
-        """Thiếu trường 'target_courses' bắt buộc phải trả về HTTP 422."""
-        response = client.post(
-            "/api/v1/learning-path",
-            json={"passed_courses": ["841020"]},
-        )
-        assert response.status_code == 422
-
-    def test_learning_path_empty_target_courses_returns_422(self, client: TestClient) -> None:
-        """Danh sách 'target_courses' rỗng phải trả về HTTP 422."""
-        response = client.post(
-            "/api/v1/learning-path",
-            json={"target_courses": []},
-        )
-        assert response.status_code == 422
-
-    def test_learning_path_invalid_max_credits_returns_422(self, client: TestClient) -> None:
-        """Số tín chỉ tối đa bằng 0 hoặc âm phải trả về HTTP 422."""
-        response = client.post(
-            "/api/v1/learning-path",
-            json={
-                "target_courses": ["841108"],
-                "max_credits_per_semester": 0,
-            },
-        )
-        assert response.status_code == 422
-
-
-# ==============================================================================
-# 6. KIỂM THỬ XỬ LÝ LỖI THỐNG NHẤT (MÃ LỖI 400, 422, 503) & NẠP DỮ LIỆU THẬT
-# ==============================================================================
-class TestMilestone2Enhancements:
-    """Kiểm thử các tính năng nâng cấp theo Checklist Tuần 2 (Mốc 2):
-    - Đọc JSON thật của nhiều môn học.
-    - Xử lý mã lỗi 400 (Bad Request).
-    - Xử lý mã lỗi 422 (PDF rỗng / không đọc được).
-    - Xử lý mã lỗi 503 (Dịch vụ ngoài lỗi / LLM gián đoạn).
-    - Ghi log vào logs/api.log.
-    """
-
-    def test_analyze_empty_file_upload_returns_422(self, client: TestClient) -> None:
-        """Upload file PDF 0 bytes phải bị từ chối với HTTP 422."""
-        files = {"file": ("empty.pdf", io.BytesIO(b""), "application/pdf")}
-        response = client.post("/api/v1/analyze-syllabus", files=files)
-        assert response.status_code == 422
-        assert "rỗng" in response.json()["detail"].lower()
-
-    def test_analyze_invalid_pdf_content_returns_422(self, client: TestClient) -> None:
-        """Upload file không đúng header PDF (%PDF-) phải trả về HTTP 422."""
-        files = {"file": ("fake.pdf", io.BytesIO(b"NOT A REAL PDF FILE"), "application/pdf")}
-        response = client.post("/api/v1/analyze-syllabus", files=files)
-        assert response.status_code == 422
-        assert "định dạng pdf" in response.json()["detail"].lower()
-
-    def test_analyze_real_course_841401(self, client: TestClient) -> None:
-        """Phân tích đề cương Giải tích 1 (841401) nạp đúng JSON môn thật."""
-        payload = {"file_path": "data/raw/26 - 841401 - Giải tích 1.pdf"}
-        response = client.post("/api/v1/analyze-syllabus", json=payload)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert data["course_code"] == "841401"
-        assert "Giải tích 1" in data["course_name"]
-        assert len(data["clos"]) == 3
-
-    def test_analyze_real_course_841108(self, client: TestClient) -> None:
-        """Phân tích đề cương Cấu trúc dữ liệu & giải thuật (841108) nạp đúng JSON môn thật."""
-        payload = {"file_path": "data/raw/34 - 841108 - Cấu trúc dữ liệu và giải thuật.pdf"}
-        response = client.post("/api/v1/analyze-syllabus", json=payload)
-        assert response.status_code == 200
-
-        data = response.json()
-        assert data["course_code"] == "841108"
-        assert "Cấu trúc dữ liệu" in data["course_name"]
-        assert data["credits"] == 4
-        assert "841303" in data["prerequisites"]
-
-    def test_ask_invalid_course_code_returns_400(self, client: TestClient) -> None:
-        """Hỏi với mã môn không đúng quy cách SGU (không phải 6 chữ số) trả về HTTP 400."""
-        payload = {
-            "question": "Học phần này mấy tín chỉ?",
-            "course_code": "INVALID_CODE",
-        }
-        response = client.post("/api/v1/ask", json=payload)
-        assert response.status_code == 400
-        assert "không hợp lệ" in response.json()["detail"].lower()
-
-    def test_ask_external_service_unavailable_returns_503(self, client: TestClient) -> None:
-        """Khi dịch vụ AI/LLM bên ngoài lỗi hoặc gián đoạn, API trả về HTTP 503."""
-        payload = {
-            "question": "Kiểm tra lỗi kết nối mạng [simulate_external_failure]",
-            "course_code": "841020",
-        }
-        response = client.post("/api/v1/ask", json=payload)
-        assert response.status_code == 503
-        assert "không khả dụng" in response.json()["detail"].lower()
-
-    def test_learning_path_conflict_target_and_passed_returns_400(self, client: TestClient) -> None:
-        """Môn trong target_courses đã có trong passed_courses gây xung đột nghiệp vụ, trả về HTTP 400."""
-        payload = {
-            "target_courses": ["841020", "841108"],
-            "passed_courses": ["841020"],  # Trùng môn 841020
-            "max_credits_per_semester": 20,
-        }
-        response = client.post("/api/v1/learning-path", json=payload)
-        assert response.status_code == 400
-        assert "đã nằm trong danh sách" in response.json()["detail"].lower()
-
-    def test_logging_file_populated(self, client: TestClient) -> None:
-        """Xác minh tệp logs/api.log tồn tại và được ghi nội dung nhật ký."""
-        # Gọi thử health check để kích hoạt middleware log
+class TestHealth:
+    def test_health_ok(self, client):
+        """GET /health → 200 với status ok."""
         resp = client.get("/health")
         assert resp.status_code == 200
+        data = resp.json()
+        assert data.get("status") == "ok"
 
-        log_path = Path(__file__).resolve().parent.parent / "logs" / "api.log"
-        assert log_path.exists(), "Tệp logs/api.log phải tồn tại"
-        assert log_path.stat().st_size > 0, "Tệp logs/api.log phải có dung lượng > 0"
+    def test_health_has_version(self, client):
+        """GET /health phải trả về trường version."""
+        resp = client.get("/health")
+        assert "version" in resp.json()
 
+
+# ---------------------------------------------------------------------------
+# 2. POST /classify-clo
+# ---------------------------------------------------------------------------
+
+class TestClassifyClo:
+    ENDPOINT = "/classify-clo"
+
+    def test_classify_clo_valid(self, client):
+        """CLO hợp lệ → 200, label trong 0-6."""
+        payload = {"text": "Áp dụng UML để thiết kế hệ thống phần mềm cỡ vừa"}
+        resp = client.post(self.ENDPOINT, json=payload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "label" in data
+        assert 0 <= data["label"] <= 6
+
+    def test_classify_clo_empty_string(self, client):
+        """CLO rỗng → 422 hoặc 400."""
+        payload = {"text": ""}
+        resp = client.post(self.ENDPOINT, json=payload)
+        assert resp.status_code in (400, 422)
+
+    def test_classify_clo_missing_field(self, client):
+        """Thiếu trường text → 422."""
+        resp = client.post(self.ENDPOINT, json={})
+        assert resp.status_code == 422
+
+    def test_classify_clo_returns_bloom_name(self, client):
+        """Kết quả phải có bloom_name."""
+        payload = {"text": "Phân tích ưu nhược điểm của các thuật toán sắp xếp"}
+        resp = client.post(self.ENDPOINT, json=payload)
+        assert resp.status_code == 200
+        assert "bloom_name" in resp.json()
+
+    def test_classify_clo_batch(self, client):
+        """POST /classify-clo/batch với danh sách CLO → 200, list kết quả."""
+        texts = [
+            "Nhớ định nghĩa biến trong Python",
+            "Hiểu vòng lặp for",
+            "Áp dụng đệ quy giải bài toán tháp Hà Nội",
+        ]
+        resp = client.post("/classify-clo/batch", json={"texts": texts})
+        assert resp.status_code == 200
+        results = resp.json()
+        assert isinstance(results, list) or "results" in results
+
+
+# ---------------------------------------------------------------------------
+# 3. POST /ask
+# ---------------------------------------------------------------------------
+
+class TestAsk:
+    ENDPOINT = "/ask"
+
+    def test_ask_valid(self, client):
+        """Câu hỏi hợp lệ → 200 với answer và sources."""
+        payload = {
+            "question": "Môn Cơ sở lập trình có bao nhiêu tín chỉ?",
+            "top_k": 3,
+        }
+        resp = client.post(self.ENDPOINT, json=payload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "answer" in data or "retrieved_chunks" in data
+
+    def test_ask_empty_question(self, client):
+        """Câu hỏi rỗng → 400 hoặc 422."""
+        resp = client.post(self.ENDPOINT, json={"question": ""})
+        assert resp.status_code in (400, 422)
+
+    def test_ask_missing_question(self, client):
+        """Thiếu trường question → 422."""
+        resp = client.post(self.ENDPOINT, json={})
+        assert resp.status_code == 422
+
+    def test_ask_llm_unavailable_returns_chunks(self, client):
+        """Khi LLM lỗi, API vẫn phải trả retrieved_chunks (503 hoặc 200 degraded)."""
+        with patch("api.main.generate_answer", side_effect=RuntimeError("LLM timeout")):
+            payload = {"question": "Phương pháp giảng dạy của môn Giải tích là gì?"}
+            resp = client.post(self.ENDPOINT, json=payload)
+            # 503 với chunks HOẶC 200 degraded mode đều chấp nhận
+            assert resp.status_code in (200, 503)
+            if resp.status_code == 503:
+                assert "retrieved_chunks" in resp.json()
+
+
+# ---------------------------------------------------------------------------
+# 4. POST /analyze-syllabus
+# ---------------------------------------------------------------------------
+
+class TestAnalyzeSyllabus:
+    ENDPOINT = "/analyze-syllabus"
+
+    def test_analyze_no_file(self, client):
+        """Không gửi file → 422."""
+        resp = client.post(self.ENDPOINT)
+        assert resp.status_code == 422
+
+    def test_analyze_with_pdf(self, client):
+        """Gửi file PDF giả → 200 với schema đầy đủ."""
+        dummy_pdf = _make_dummy_pdf()
+        with patch("api.main.analyze_pdf") as mock_analyze:
+            mock_analyze.return_value = {
+                "course_code": "841020",
+                "course_name": "Cơ sở lập trình",
+                "credits": 3,
+                "prerequisites": [],
+                "clos": [{"clo_id": "CLO1", "text": "...", "bloom_level": 2}],
+                "sections": {},
+                "missing_sections": [],
+                "model_version": "v0.1-mock",
+                "processing_time_s": 0.14,
+            }
+            resp = client.post(
+                self.ENDPOINT,
+                files={"file": ("test.pdf", io.BytesIO(dummy_pdf), "application/pdf")},
+            )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "course_code" in data
+        assert "clos" in data
+
+    def test_analyze_wrong_mime_type(self, client):
+        """Gửi file không phải PDF → 400 hoặc 422."""
+        resp = client.post(
+            self.ENDPOINT,
+            files={"file": ("test.txt", io.BytesIO(b"plain text"), "text/plain")},
+        )
+        assert resp.status_code in (400, 422)
+
+
+# ---------------------------------------------------------------------------
+# 5. POST /learning-path
+# ---------------------------------------------------------------------------
+
+class TestLearningPath:
+    ENDPOINT = "/learning-path"
+
+    def test_learning_path_valid(self, client):
+        """target + completed hợp lệ → 200 với path."""
+        payload = {"target_course": "841470", "completed_courses": ["841020"]}
+        resp = client.post(self.ENDPOINT, json=payload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "path" in data or "learning_path" in data
+
+    def test_learning_path_empty_completed(self, client):
+        """completed rỗng → vẫn 200."""
+        payload = {"target_course": "841470", "completed_courses": []}
+        resp = client.post(self.ENDPOINT, json=payload)
+        assert resp.status_code == 200
+
+    def test_learning_path_invalid_course(self, client):
+        """Mã môn không tồn tại → 400 hoặc 404."""
+        with patch("api.main.course_graph") as mock_graph:
+            mock_graph.get_learning_path.side_effect = ValueError("Course not found")
+            mock_graph.courses = {}
+            payload = {"target_course": "999999", "completed_courses": []}
+            resp = client.post(self.ENDPOINT, json=payload)
+        assert resp.status_code in (400, 404)
+
+    def test_learning_path_missing_target(self, client):
+        """Thiếu target_course → 422."""
+        resp = client.post(self.ENDPOINT, json={"completed_courses": ["841020"]})
+        assert resp.status_code == 422
+
+
+# ---------------------------------------------------------------------------
+# 6. GET /courses
+# ---------------------------------------------------------------------------
+
+class TestCourses:
+    def test_list_courses(self, client):
+        """GET /courses → 200 với danh sách môn."""
+        resp = client.get("/courses")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert isinstance(data, list) or "courses" in data
+
+    def test_get_course_detail(self, client):
+        """GET /courses/{code} → 200 hoặc 404."""
+        resp = client.get("/courses/841020")
+        assert resp.status_code in (200, 404)

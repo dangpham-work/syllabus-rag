@@ -93,3 +93,95 @@ Tuần 3 cần mô hình học máy M1 phân loại đoạn văn OCR vào 11 l�
 - Số liệu đánh giá chính thức được ghi vào `results/metrics.json`.
 - Hàm `analyze_pdf` đã sẵn sàng để TV3 import vào endpoint `/analyze-syllabus`.
 
+## D4. Kiến trúc mô hình phân loại Bloom M2 (28/10/2026)
+
+**Người quyết định:** TV1 (tầng mô hình) · **Trạng thái:** đã chốt cho phiên bản v1; xem xét nâng lên embedding đa ngôn ngữ khi đủ dữ liệu.
+
+### Bối cảnh
+Tuần 3–4 cần mô hình M2 phân loại CLO vào 7 lớp Bloom (0–6) đạt Macro-F1 ≥ 0,75 trên 5-fold CV theo môn. Dữ liệu đầu vào là `data/processed/clos_labeled.csv` (CLO từ 54 đề cương SGU, đã gán nhãn thủ công). Thách thức: dữ liệu không cân bằng lớp (Lớp 3 chiếm ~40%, Lớp 0/Lớp 6 rất ít).
+
+### Quyết định
+**Kiến trúc M2 theo 3 giai đoạn (B0 → B1 → B2):**
+
+1. **B0 – Rule-based baseline:** Tra cứu danh sách động từ hành động định nghĩa trong `docs/labeling_guideline_bloom.md`. Không cần dữ liệu huấn luyện; dùng để đặt ngưỡng tối thiểu.
+
+2. **B1 – TF-IDF + Logistic Regression (5-fold CV theo môn):**
+   - Đặc trưng: TF-IDF từ (n-gram 1–2, 5.000 chiều) + ký tự (n-gram 2–4, 3.000 chiều).
+   - Cân bằng lớp: `class_weight = "balanced"`.
+   - Tìm siêu tham số: `C ∈ {0.1, 0.5, 1.0, 5.0, 10.0}` qua GridSearchCV.
+   - Phân chia 5-fold **theo mã môn** (không chia theo CLO) để tránh rò rỉ ngữ cảnh đề cương.
+
+3. **B2 – Multilingual E5 embedding + LogReg đầu:**
+   - Embedding: `intfloat/multilingual-e5-small` (model nhỏ nhất, 118M tham số, cân bằng chất lượng và tốc độ CPU).
+   - Fallback: TF-IDF + SVD (50 chiều) khi model chưa tải được.
+   - Kết hợp embedding với đặc trưng từ vựng B1 (feature concatenation).
+
+**Lưu mô hình tốt nhất:** `models/bloom_model.pkl`.
+
+### Lý do
+- **B0** giúp phát hiện lỗi gán nhãn: CLO nào B0 dự đoán khác nhãn thủ công nhiều hơn 2 lớp → cần xem lại.
+- **B1** nhanh, đủ tốt, dễ giải thích — phù hợp với kế hoạch 5 tuần không có GPU.
+- **B2** sử dụng embedding đa ngôn ngữ để tận dụng context ngữ nghĩa tiếng Việt mà TF-IDF bỏ qua. Dùng model nhỏ nhất (`e5-small`) để chạy CPU trong thời gian hợp lý (<5 phút/lần).
+- Phân chia 5-fold theo môn: tương đồng với cách M1 chia (theo mã môn), đảm bảo đánh giá tổng quát hoá thực tế.
+
+### Hạn chế và rủi ro
+- Dữ liệu gán nhãn thủ công (~200-400 CLO) có thể chưa đủ để B2 vượt B1 đáng kể.
+- Lớp 0 (Out-of-domain) và Lớp 6 (Sáng tạo) có ít mẫu, F1 per-class có thể thấp.
+- `multilingual-e5-small` cần kết nối internet lần đầu tải; môi trường offline phải dùng fallback TF-IDF+SVD.
+
+### Hệ quả
+- Notebook `notebooks/modeling/2.0-dd-bloom-baseline.ipynb`: B0 + B1 kết quả.
+- Notebook `notebooks/modeling/2.1-dd-bloom-experiments.ipynb`: B1 tuning + B2.
+- Notebook `notebooks/modeling/2.2-dd-bloom-error-analysis.ipynb`: phân tích lỗi.
+- Số liệu ghi vào `results/metrics.json` dưới key `m2_bloom`.
+- Hàm `predict_bloom(text) -> dict` export từ `src/syllabus_core/models/predict.py`.
+
+## D5. Chiến lược retrieval M3: RRF + LambdaMART reranker (29/10/2026)
+
+**Người quyết định:** TV1 (tầng mô hình) · **Trạng thái:** đã chốt cho phiên bản v1; xem xét CrossEncoder nếu có GPU.
+
+### Bối cảnh
+Tuần 4 cần hệ thống retrieval M3 phục vụ RAG: nhận câu hỏi tiếng Việt về đề cương SGU, trả về top-k chunks liên quan. Mục tiêu: Recall@5 ≥ 0,85 và Faithfulness ≥ 90%. Cần so sánh 6 cấu hình (BM25, Dense, RRF, RRF+LogReg, RRF+LambdaMART, RRF+CrossEncoder).
+
+### Quyết định
+**Hệ thống retrieval 3 bước:**
+
+1. **First-stage retrieval:** RRF (Reciprocal Rank Fusion) kết hợp BM25 (top-30) và Dense (top-30, model `intfloat/multilingual-e5-small`). RRF k=60. Trả về top-20 candidates.
+
+2. **Reranker (second-stage):** LambdaMART (`lightgbm` objective=`lambdarank`) với 8 đặc trưng:
+   - BM25 score, Dense cosine score, RRF score
+   - Độ dài chunk (tokens), Tỷ lệ overlap query-chunk (unigram)
+   - Vị trí chunk trong section, Boolean: chunk có chứa course_code không
+   - TF-IDF cosine giữa query và chunk
+
+3. **Final output:** Top-5 chunks sau rerank → đưa vào LLM để sinh câu trả lời.
+
+**Lý do chọn LambdaMART:**
+- Không cần GPU (CPU-friendly), huấn luyện trên ~80 synthetic QA pairs.
+- Tốt hơn LogReg trên bộ dữ liệu nhỏ có ranking objective.
+- CrossEncoder (PhoBERT-based) cần GPU hoặc quá chậm trên CPU (~20s/query).
+
+**Lưu model:** `models/reranker.txt` (LightGBM text format).
+
+### Lý do so với các lựa chọn khác
+
+| Cấu hình | Recall@5 (est.) | Latency/query | Ưu điểm | Nhược điểm |
+|---------|----------------|--------------|---------|-----------|
+| BM25 only | ~0,65 | <0,1s | Không cần model | Bỏ qua ngữ nghĩa |
+| Dense only | ~0,72 | ~0,5s | Ngữ nghĩa tốt | Bỏ qua từ khóa |
+| RRF | ~0,78 | ~0,6s | Kết hợp tốt nhất 2 cách | Không học được từ dữ liệu |
+| RRF+LambdaMART | **~0,87** | ~0,8s | Tốt nhất không cần GPU | Cần synthetic QA data |
+| RRF+CrossEncoder | ~0,89 | ~20s/query | Tốt nhất tổng thể | Quá chậm trên CPU |
+
+### Hạn chế và rủi ro
+- 80 synthetic QA pairs là dữ liệu nhỏ; Recall@5 thực tế có thể thấp hơn ước tính.
+- LambdaMART có thể overfit nếu QA pairs không đa dạng đủ về chủ đề.
+- CrossEncoder để trong repo dưới dạng config option để chuyển sang khi có GPU.
+
+### Hệ quả
+- `src/syllabus_core/retrieval/index.py`: BM25Index + DenseIndex + build_chunks.
+- `src/syllabus_core/retrieval/hybrid.py`: RRF + 6 configs.
+- `src/syllabus_core/retrieval/rag.py`: RAGPipeline end-to-end.
+- `src/syllabus_core/models/train_reranker.py`: LambdaMART training script.
+- Notebooks: `3.0-dd-retrieval.ipynb`, `3.1-dd-reranker.ipynb`, `3.2-dd-rag-evaluation.ipynb`.
+- Số liệu ghi vào `results/metrics.json` dưới key `m3_retrieval` và `m3_rag`.
