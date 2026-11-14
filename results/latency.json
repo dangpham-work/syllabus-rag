@@ -1,0 +1,96 @@
+{
+  "benchmark": "FastAPI TestClient(app) 20 requests per endpoint",
+  "measured_at": "2026-11-14T09:05:31.967339+00:00",
+  "python_version": "3.12.5",
+  "requests_per_endpoint": 20,
+  "endpoints": {
+    "GET /health": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 0.757,
+      "p50_ms": 0.666,
+      "p95_ms": 0.985,
+      "min_ms": 0.609,
+      "max_ms": 2.009
+    },
+    "POST /classify-clo": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 0.853,
+      "p50_ms": 0.755,
+      "p95_ms": 0.978,
+      "min_ms": 0.679,
+      "max_ms": 2.662
+    },
+    "POST /classify-clo/batch": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 0.83,
+      "p50_ms": 0.825,
+      "p95_ms": 0.942,
+      "min_ms": 0.752,
+      "max_ms": 0.977
+    },
+    "POST /analyze-syllabus": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 6.966,
+      "p50_ms": 1.173,
+      "p95_ms": 7.581,
+      "min_ms": 1.06,
+      "max_ms": 115.951
+    },
+    "POST /ask": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 18.488,
+      "p50_ms": 1.385,
+      "p95_ms": 19.155,
+      "min_ms": 1.218,
+      "max_ms": 342.875
+    },
+    "POST /learning-path": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 0.862,
+      "p50_ms": 0.835,
+      "p95_ms": 0.973,
+      "min_ms": 0.75,
+      "max_ms": 1.164
+    },
+    "GET /courses": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 0.963,
+      "p50_ms": 0.812,
+      "p95_ms": 1.682,
+      "min_ms": 0.667,
+      "max_ms": 2.612
+    },
+    "GET /courses/{course_code}": {
+      "n_requests": 20,
+      "status_codes": [
+        200
+      ],
+      "mean_ms": 0.934,
+      "p50_ms": 0.911,
+      "p95_ms": 1.117,
+      "min_ms": 0.753,
+      "max_ms": 1.413
+    }
+  }
+}

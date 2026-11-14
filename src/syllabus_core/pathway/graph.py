@@ -58,6 +58,53 @@ class PrerequisiteGraph:
         self._reverse: dict[str, set[str]] = {}
         # Theo dõi nguồn của mỗi cạnh: {(A,B): ['m1'|'xlsx']}
         self._edge_sources: dict[tuple[str, str], list[str]] = {}
+        self._courses_raw: Optional[dict[str, dict]] = None
+
+    @property
+    def courses(self) -> dict[str, dict]:
+        """Dict môn học tương thích CourseGraph (tests/test_planner.py)."""
+        if getattr(self, "_courses_raw", None) is not None:
+            return self._courses_raw  # type: ignore[return-value]
+        return {
+            code: {
+                "course_name": n.name,
+                "credits": n.credits,
+                "prerequisites": sorted(self._reverse.get(code, set())),
+            }
+            for code, n in self._nodes.items()
+        }
+
+    @courses.setter
+    def courses(self, value: dict[str, dict]) -> None:
+        self._courses_raw = value
+
+    def _build_graph(self) -> None:
+        """Xây dựng lại nodes/edges từ self.courses (hỗ trợ CourseGraph.__new__)."""
+        self._nodes = {}
+        self._edges = {}
+        self._reverse = {}
+        self._edge_sources = {}
+
+        raw_courses = getattr(self, "_courses_raw", None) or {}
+        for code, info in raw_courses.items():
+            name = info.get("course_name") or info.get("name") or code
+            credits = int(info.get("credits", 3))
+            avg_bloom = float(info.get("avg_bloom_level", 2.0))
+            rec_sem = int(info.get("recommended_semester", 1))
+            self.add_course(
+                CourseNode(
+                    code=code,
+                    name=name,
+                    credits=credits,
+                    avg_bloom_level=avg_bloom,
+                    recommended_semester=rec_sem,
+                )
+            )
+
+        for code, info in raw_courses.items():
+            for prereq in info.get("prerequisites", []):
+                if prereq and isinstance(prereq, str):
+                    self.add_edge(prereq, code, source="courses")
 
     # ------------------------------------------------------------------
     # Thêm node / cạnh
@@ -267,6 +314,41 @@ class PrerequisiteGraph:
     def edges(self) -> dict[str, set[str]]:
         return self._edges
 
+    def topological_sort(self) -> list[str]:
+        """Sắp xếp topo toàn bộ đồ thị theo thuật toán Kahn, trả về list mã môn."""
+        in_degree: dict[str, int] = {code: 0 for code in self._nodes}
+        for code in self._nodes:
+            for neighbor in self._edges.get(code, set()):
+                if neighbor in in_degree:
+                    in_degree[neighbor] += 1
+
+        ready = sorted(
+            [code for code, deg in in_degree.items() if deg == 0],
+            key=lambda c: (
+                self._nodes[c].recommended_semester,
+                self._nodes[c].avg_bloom_level,
+                c,
+            ),
+        )
+        order: list[str] = []
+        while ready:
+            code = ready.pop(0)
+            order.append(code)
+            for neighbor in sorted(self._edges.get(code, set())):
+                if neighbor not in in_degree:
+                    continue
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    ready.append(neighbor)
+                    ready.sort(
+                        key=lambda c: (
+                            self._nodes[c].recommended_semester,
+                            self._nodes[c].avg_bloom_level,
+                            c,
+                        )
+                    )
+        return order
+
     def to_dict(self) -> dict:
         return {
             "nodes": {
@@ -280,3 +362,7 @@ class PrerequisiteGraph:
             "edges": {a: sorted(b) for a, b in self._edges.items()},
             "discrepancies": self.get_discrepancies(),
         }
+
+
+# Alias tương thích với tests/test_planner.py
+CourseGraph = PrerequisiteGraph

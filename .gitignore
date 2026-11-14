@@ -234,3 +234,8 @@ models/checkpoints/
 *.pth
 *.bin
 *.safetensors
+
+# Graphify knowledge graph
+graphify-out/
+.graphify*
+.DS_Store

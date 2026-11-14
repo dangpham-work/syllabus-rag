@@ -1,29 +1,143 @@
 {
-  "answer": "Theo đề cương chi tiết học phần Cơ sở lập trình (mã môn 841020 - Khoa CNTT, Trường ĐH Sài Gòn), học phần này KHÔNG yêu cầu học phần tiên quyết bắt buộc. Tuy nhiên, sinh viên được khuyến nghị nên hoàn thành học phần học trước là Tin học đại cương.",
+  "answer": "Theo đề cương môn Cơ sở lập trình (841020), 10. Yêu cầu học phần: Tham dự tối thiểu 80% số tiết, không sao chép mã nguồn.... [1]",
   "citations": [
     {
+      "ref": "[1]",
+      "chunk_id": "841020__course_policies__000",
       "course_code": "841020",
-      "section": "general_info",
-      "chunk_id": "841020_sec1_chunk0",
-      "quote": "Học phần tiên quyết: Không. Học phần học trước: Tin học đại cương."
+      "course_name": "Cơ sở lập trình",
+      "section": "course_policies",
+      "text_snippet": "10. Yêu cầu học phần: Tham dự tối thiểu 80% số tiết, không sao chép mã nguồn."
     }
   ],
   "retrieved_chunks": [
     {
-      "chunk_id": "841020_sec1_chunk0",
+      "rank": 1,
+      "chunk_id": "841020__course_policies__000",
       "course_code": "841020",
-      "section": "general_info",
-      "content": "1. Thông tin chung học phần:\n- Tên học phần: Cơ sở lập trình\n- Mã học phần: 841020\n- Số tín chỉ: 3 (Lý thuyết: 2, Thực hành: 1)\n- Học phần tiên quyết: Không\n- Học phần học trước: Tin học đại cương",
-      "score": 0.935
+      "course_name": "Cơ sở lập trình",
+      "section": "course_policies",
+      "text": "10. Yêu cầu học phần: Tham dự tối thiểu 80% số tiết, không sao chép mã nguồn.",
+      "score": 0.03278688524590164
     },
     {
-      "chunk_id": "841020_sec2_chunk0",
+      "rank": 2,
+      "chunk_id": "841020__general_info__000",
       "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "general_info",
+      "text": "1. Thông tin chung học phần: - Tên học phần: Cơ sở lập trình - Mã học phần: 841020 - Số tín chỉ: 3 (2 LT + 1 TH) - Học phần tiên quyết: Không - Học phần học trước: Tin học đại cương - Đơn vị phụ trách...",
+      "score": 0.03225806451612903
+    },
+    {
+      "rank": 3,
+      "chunk_id": "841020__course_objectives__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "course_objectives",
+      "text": "3. Mục tiêu học phần: Nắm vững tư duy giải quyết bài toán và rèn luyện kỹ năng lập trình giải thuật.",
+      "score": 0.031746031746031744
+    },
+    {
+      "rank": 4,
+      "chunk_id": "841020__assessment__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "assessment",
+      "text": "7. Đánh giá học phần: Đánh giá quá trình: 20%, Thi thực hành: 30%, Thi cuối kỳ: 50%.",
+      "score": 0.031009615384615385
+    },
+    {
+      "rank": 5,
+      "chunk_id": "841020__course_description__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
       "section": "course_description",
-      "content": "2. Mô tả tóm tắt học phần: Học phần cung cấp kiến thức nền tảng về tư duy thuật toán và kỹ thuật lập trình cơ bản bằng ngôn ngữ C/C++.",
-      "score": 0.812
+      "text": "2. Mô tả tóm tắt học phần: Cung cấp tư duy thuật toán và kỹ thuật lập trình thủ tục căn bản bằng C/C++.",
+      "score": 0.031009615384615385
+    },
+    {
+      "rank": 6,
+      "chunk_id": "841020__course_learning_outcomes__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "course_learning_outcomes",
+      "text": "4. Chuẩn đầu ra học phần: CLO1 (Hiểu cú pháp); CLO2 (Áp dụng rẽ nhánh/lặp); CLO3 (Mảng & chuỗi); CLO4 (Hàm & con trỏ).",
+      "score": 0.029857397504456328
+    },
+    {
+      "rank": 7,
+      "chunk_id": "841020__clos__001",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "clos",
+      "text": "CLO2: Áp dụng cấu trúc điều khiển rẽ nhánh và vòng lặp để giải quyết các bài toán tính toán cơ bản.",
+      "score": 0.029631255487269532
+    },
+    {
+      "rank": 8,
+      "chunk_id": "841020__clos__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "clos",
+      "text": "CLO1: Trình bày được các khái niệm cơ bản về thuật toán, lưu đồ và kiểu dữ liệu cơ sở.",
+      "score": 0.029236022193768675
+    },
+    {
+      "rank": 9,
+      "chunk_id": "841020__course_content__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "course_content",
+      "text": "5. Nội dung chi tiết học phần: Chương 1: Tổng quan; Chương 2: Kiểu dữ liệu & toán tử; Chương 3: Rẽ nhánh & lặp; Chương 4: Mảng; Chương 5: Hàm; Chương 6: Con trỏ.",
+      "score": 0.029211087420042643
+    },
+    {
+      "rank": 10,
+      "chunk_id": "841020__teaching_schedule__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "teaching_schedule",
+      "text": "9. Kế hoạch giảng dạy chi tiết: Phân bổ 15 tuần học theo quy định.",
+      "score": 0.028577260665441927
+    },
+    {
+      "rank": 11,
+      "chunk_id": "841020__learning_resources__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "learning_resources",
+      "text": "8. Giáo trình và tài liệu tham khảo: Giáo trình Kỹ thuật lập trình C - ĐH Sài Gòn; C How to Program (Deitel).",
+      "score": 0.028381642512077296
+    },
+    {
+      "rank": 12,
+      "chunk_id": "841020__teaching_methods__000",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "teaching_methods",
+      "text": "6. Phương pháp dạy và học: Lý thuyết trên giảng đường kết hợp thực hành phòng máy tính.",
+      "score": 0.02817460317460317
+    },
+    {
+      "rank": 13,
+      "chunk_id": "841020__clos__003",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "clos",
+      "text": "CLO4: Thiết kế chương trình theo mô đun hàm, sử dụng con trỏ và quản lý bộ nhớ cơ bản.",
+      "score": 0.0273972602739726
+    },
+    {
+      "rank": 14,
+      "chunk_id": "841020__clos__002",
+      "course_code": "841020",
+      "course_name": "Cơ sở lập trình",
+      "section": "clos",
+      "text": "CLO3: Cài đặt và thao tác được với mảng, chuỗi ký tự và kiểu dữ liệu cấu trúc (struct).",
+      "score": 0.02702702702702703
     }
   ],
-  "llm_provider": "mock"
+  "provider_used": "mock",
+  "latency_ms": 369
 }
-

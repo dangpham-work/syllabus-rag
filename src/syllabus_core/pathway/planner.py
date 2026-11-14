@@ -120,47 +120,80 @@ class LearningPlanner:
 
     def plan(
         self,
-        target_course: str,
+        target_course: Optional[str] = None,
         completed_courses: Optional[list[str]] = None,
+        *,
+        target: Optional[str] = None,
+        completed: Optional[list[str]] = None,
     ) -> dict:
         """
         Lên kế hoạch học.
 
         Parameters
         ----------
-        target_course : mã môn đích
-        completed_courses : danh sách mã môn đã học
+        target_course / target : mã môn đích
+        completed_courses / completed : danh sách mã môn đã học
 
         Returns
         -------
-        dict với keys: plan, warnings, soft_suggestions
-            plan: list of {term: int, courses: list[CourseNode], total_credits: int}
-            warnings: list of str (cảnh báo vi phạm)
-            soft_suggestions: list of str (gợi ý mềm)
+        dict với keys: plan, path, total_credits, total_courses, target_course, warnings, soft_suggestions
         """
-        completed = set(completed_courses or [])
-        warnings = []
-        soft_suggestions = []
+        if target_course is None:
+            target_course = target
+        if completed_courses is None:
+            completed_courses = completed
+
+        if not target_course:
+            return {
+                "target_course": "",
+                "plan": [],
+                "path": [],
+                "total_credits": 0,
+                "total_courses": 0,
+                "warnings": ["Thiếu mã môn đích (target_course)."],
+                "soft_suggestions": [],
+            }
+
+        completed_set = set(completed_courses or [])
+        warnings: list[str] = []
+        soft_suggestions: list[str] = []
 
         # Kiểm tra môn đích tồn tại
         if target_course not in self.graph.nodes:
             return {
+                "target_course": target_course,
                 "plan": [],
+                "path": [],
+                "total_credits": 0,
+                "total_courses": 0,
                 "warnings": [f"Môn {target_course} không có trong hệ thống."],
                 "soft_suggestions": [],
             }
 
-        # Môn cần học
-        to_learn = self._get_required_courses(target_course, completed)
+        # Nếu môn đích đã hoàn thành
+        if target_course in completed_set:
+            return {
+                "target_course": target_course,
+                "plan": [],
+                "path": [],
+                "total_credits": 0,
+                "total_courses": 0,
+                "warnings": [],
+                "soft_suggestions": [f"Bạn đã hoàn thành môn {target_course}!"],
+            }
+
+        # Môn cần học (tổ tiên + đích, loại bỏ môn đã học)
+        to_learn = self._get_required_courses(target_course, completed_set)
         if not to_learn:
             return {
+                "target_course": target_course,
                 "plan": [],
+                "path": [],
+                "total_credits": 0,
+                "total_courses": 0,
                 "warnings": [],
                 "soft_suggestions": [f"Bạn đã hoàn thành tất cả môn tiên quyết của {target_course}!"],
             }
-
-        # Sắp xếp topo
-        sorted_courses = kahn_topological_sort(self.graph, subset=to_learn)
 
         # Kiểm tra chu trình
         cycles = self.graph.check_cycles()
@@ -168,58 +201,77 @@ class LearningPlanner:
             for cycle in cycles:
                 warnings.append(f"Chu trình tiên quyết: {' → '.join(cycle)}")
 
-        # Phân bổ học kỳ
+        # Phân bổ học kỳ theo từng đợt (level-by-level Kahn):
+        # Đảm bảo mọi tiên quyết phải nằm ở học kỳ TRƯỚC (term_of[prereq] < term_of[course])
         terms: list[dict] = []
-        current_term: list[CourseNode] = []
-        current_credits = 0
+        remaining = {c for c in to_learn if c in self.graph.nodes}
+        placed_codes = set(completed_set)
 
-        for course in sorted_courses:
-            # Kiểm tra prereqs hoàn thành
-            prereqs = self.graph._reverse.get(course.code, set())
-            missing_prereqs = prereqs - completed - {c.code for c in current_term}
-            placed_codes = {c.code for term in terms for c in term.get("_courses", [])}
-            unmet = prereqs - completed - placed_codes
-            if unmet:
-                warnings.append(
-                    f"Môn {course.name} ({course.code}) cần tiên quyết chưa được sắp xếp: "
-                    + ", ".join(unmet)
+        while remaining:
+            eligible = [
+                self.graph.nodes[c]
+                for c in remaining
+                if (self.graph._reverse.get(c, set()) & to_learn) <= placed_codes
+            ]
+
+            if not eligible:
+                # Chỉ xảy ra khi đồ thị có chu trình trong tập remaining
+                fallback_code = min(
+                    remaining,
+                    key=lambda c: (
+                        len((self.graph._reverse.get(c, set()) & to_learn) - placed_codes),
+                        c,
+                    ),
                 )
+                unmet = (self.graph._reverse.get(fallback_code, set()) & to_learn) - placed_codes
+                node = self.graph.nodes[fallback_code]
+                warnings.append(
+                    f"Môn {node.name} ({node.code}) cần tiên quyết chưa được sắp xếp: "
+                    + ", ".join(sorted(unmet))
+                )
+                eligible = [node]
 
-            if current_credits + course.credits > self.max_credits_per_term and current_term:
-                # Đóng học kỳ hiện tại
-                terms.append({
-                    "term": len(terms) + 1,
-                    "courses": [{"code": c.code, "name": c.name, "credits": c.credits} for c in current_term],
-                    "total_credits": current_credits,
-                    "_courses": current_term.copy(),
-                })
-                current_term = []
-                current_credits = 0
+            eligible.sort(key=lambda n: (n.recommended_semester, n.avg_bloom_level, n.code))
 
-            current_term.append(course)
-            current_credits += course.credits
+            current_term: list[CourseNode] = []
+            current_credits = 0
+            for course in eligible:
+                if current_credits + course.credits <= self.max_credits_per_term:
+                    current_term.append(course)
+                    current_credits += course.credits
+                elif not current_term:
+                    current_term.append(course)
+                    current_credits += course.credits
+                    warnings.append(
+                        f"Môn {course.code} ({course.credits} TC) vượt giới hạn {self.max_credits_per_term} TC/kỳ."
+                    )
+                    break
 
-        if current_term:
             terms.append({
                 "term": len(terms) + 1,
                 "courses": [{"code": c.code, "name": c.name, "credits": c.credits} for c in current_term],
                 "total_credits": current_credits,
-                "_courses": current_term.copy(),
             })
-
-        # Xoá key nội bộ
-        for term in terms:
-            term.pop("_courses", None)
+            for c in current_term:
+                remaining.discard(c.code)
+                placed_codes.add(c.code)
 
         # Gợi ý mềm: môn không có tiên quyết cứng nhưng nội dung tương đồng
-        soft_suggestions = self._soft_suggestions(target_course, completed, to_learn)
+        soft_suggestions = self._soft_suggestions(target_course, completed_set, to_learn)
+        path = [[c["code"] for c in t["courses"]] for t in terms]
+        total_credits = sum(t["total_credits"] for t in terms)
+        total_courses = sum(len(t["courses"]) for t in terms)
 
         logger.info(
             "Lộ trình %s: %d môn, %d học kỳ, %d cảnh báo",
-            target_course, len(to_learn), len(terms), len(warnings),
+            target_course, total_courses, len(terms), len(warnings),
         )
         return {
+            "target_course": target_course,
             "plan": terms,
+            "path": path,
+            "total_credits": total_credits,
+            "total_courses": total_courses,
             "warnings": warnings,
             "soft_suggestions": soft_suggestions,
         }
@@ -275,3 +327,7 @@ class LearningPlanner:
             placed_so_far |= term_codes
 
         return len(violations) == 0, violations
+
+
+# Alias tương thích với tests/test_planner.py
+LearningPathPlanner = LearningPlanner
