@@ -74,19 +74,20 @@ TRẢ LỜI:"""
 # ---------------------------------------------------------------------------
 
 def call_gemini(prompt: str, temperature: float = 0.2, max_tokens: int = 512) -> str:
-    """Gọi Gemini API."""
+    """Gọi Gemini API (google-genai SDK, Interactions API)."""
     try:
-        import google.generativeai as genai  # type: ignore
-        api_key = os.getenv("GEMINI_API_KEY", "")
-        if not api_key:
+        from google import genai  # type: ignore
+        api_key = os.getenv("GEMINI_API_KEY", "").strip()
+        if not api_key or api_key.upper() == "EMPTY":
             raise ValueError("GEMINI_API_KEY chưa được đặt")
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel(
-            "gemini-1.5-flash",
-            generation_config={"temperature": temperature, "max_output_tokens": max_tokens},
+        client = genai.Client(api_key=api_key)
+        interaction = client.interactions.create(
+            model="gemini-4-hydrogen",
+            input=prompt,
+            generation_config={"max_output_tokens": max_tokens},
+            store=False,
         )
-        response = model.generate_content(prompt)
-        return response.text
+        return interaction.output_text or ""
     except Exception as e:
         raise RuntimeError(f"Gemini lỗi: {e}") from e
 
@@ -95,8 +96,8 @@ def call_groq(prompt: str, temperature: float = 0.2, max_tokens: int = 512) -> s
     """Gọi Groq API (fallback)."""
     try:
         from groq import Groq  # type: ignore
-        api_key = os.getenv("GROQ_API_KEY", "")
-        if not api_key:
+        api_key = os.getenv("GROQ_API_KEY", "").strip()
+        if not api_key or api_key.upper() == "EMPTY":
             raise ValueError("GROQ_API_KEY chưa được đặt")
         client = Groq(api_key=api_key)
         resp = client.chat.completions.create(
@@ -206,11 +207,12 @@ class RAGPipeline:
         self,
         retriever,
         llm_provider: str = "gemini",
-        fallback_provider: str = "groq",
+        fallback_provider: Optional[str] = "groq",
         cache_path: Optional[str | Path] = None,
         temperature: float = 0.2,
         max_tokens: int = 512,
         reranker_model=None,
+        allow_mock_fallback: Optional[bool] = None,
     ):
         self.retriever = retriever
         self.llm_provider = llm_provider
@@ -219,21 +221,38 @@ class RAGPipeline:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.reranker = reranker_model
+        if allow_mock_fallback is None:
+            env_flag = os.getenv("RAG_ALLOW_MOCK_FALLBACK", "true").strip().lower()
+            self.allow_mock_fallback = env_flag not in ("0", "false", "no")
+        else:
+            self.allow_mock_fallback = bool(allow_mock_fallback)
 
     def _call_llm(self, prompt: str, chunks: list[Chunk]) -> tuple[str, str]:
         """Gọi LLM với fallback. Returns (answer, provider_used)."""
-        providers = [self.llm_provider, self.fallback_provider, "mock"]
+        providers: list[str] = []
+        for p in (self.llm_provider, self.fallback_provider):
+            if p and p not in providers:
+                if p == "mock" and not self.allow_mock_fallback:
+                    continue
+                providers.append(p)
+        if self.allow_mock_fallback and "mock" not in providers:
+            providers.append("mock")
+
         for provider in providers:
             try:
                 if provider == "gemini":
                     return call_gemini(prompt, self.temperature, self.max_tokens), "gemini"
                 elif provider == "groq":
                     return call_groq(prompt, self.temperature, self.max_tokens), "groq"
-                else:
+                elif provider == "mock":
                     return call_llm_mock(prompt, chunks), "mock"
+                else:
+                    raise ValueError(f"Provider không hỗ trợ: {provider}")
             except Exception as e:
                 logger.warning("Provider %s lỗi: %s. Thử provider tiếp theo.", provider, e)
-        return call_llm_mock(prompt, chunks), "mock"
+
+        logger.error("Tất cả LLM provider đều thất bại và mock fallback đang tắt.")
+        return "LLM không khả dụng.", "error"
 
     def answer(
         self,
@@ -273,7 +292,8 @@ class RAGPipeline:
         else:
             prompt = build_prompt(question, chunks)
             answer_text, provider_used = self._call_llm(prompt, chunks)
-            self.cache.set(question, chunk_ids, answer_text)
+            if provider_used in ("gemini", "groq"):
+                self.cache.set(question, chunk_ids, answer_text)
 
         citations = map_citations(answer_text, chunks)
         latency_ms = int((time.time() - t0) * 1000)
