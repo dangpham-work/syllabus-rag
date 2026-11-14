@@ -273,13 +273,16 @@ class RAGPipeline:
         """
         t0 = time.time()
 
-        # Retrieve
+        # Retrieve (giới hạn top_k = context_k để prompt và payload gọn)
+        context_k = getattr(self.retriever, "context_k", 5)
         if self.reranker:
             candidates = self.retriever.retrieve_with_reranker(
-                question, self.reranker, filter_course=filter_course,
+                question, self.reranker, top_k=context_k, filter_course=filter_course,
             )
         else:
-            candidates = self.retriever.retrieve(question, filter_course=filter_course)
+            candidates = self.retriever.retrieve(
+                question, top_k=context_k, filter_course=filter_course,
+            )
 
         chunks = [c for c, _ in candidates]
         chunk_ids = [c.chunk_id for c in chunks]

@@ -260,13 +260,14 @@ class BM25Index:
     def _build_custom(self):
         """BM25 tự implement khi không có thư viện."""
         self._corpus_tokens = [_tokenize(c.full_text) for c in self.chunks]
+        self._doc_tfs = [Counter(doc) for doc in self._corpus_tokens]
+        self._doc_lens = [len(doc) for doc in self._corpus_tokens]
         N = len(self._corpus_tokens)
-        self._avgdl = sum(len(doc) for doc in self._corpus_tokens) / N if N else 1
+        self._avgdl = sum(self._doc_lens) / N if N else 1
 
-        # DF
         df = Counter()
-        for doc in self._corpus_tokens:
-            for term in set(doc):
+        for tf_map in self._doc_tfs:
+            for term in tf_map:
                 df[term] += 1
         self._idf = {
             term: math.log((N - n + 0.5) / (n + 0.5) + 1)
@@ -277,15 +278,19 @@ class BM25Index:
         scores = np.zeros(len(self.chunks))
         for term in query_tokens:
             idf = self._idf.get(term, 0)
-            for i, doc in enumerate(self._corpus_tokens):
-                tf = doc.count(term)
-                dl = len(doc)
-                denom = tf + self.k1 * (1 - self.b + self.b * dl / self._avgdl)
-                scores[i] += idf * (tf * (self.k1 + 1)) / denom if denom else 0
+            if not idf:
+                continue
+            for i, tf_map in enumerate(self._doc_tfs):
+                tf = tf_map.get(term, 0)
+                if tf:
+                    denom = tf + self.k1 * (1 - self.b + self.b * self._doc_lens[i] / self._avgdl)
+                    scores[i] += idf * (tf * (self.k1 + 1)) / denom
         return scores
 
     def search(self, query: str, top_k: int = 30) -> list[tuple[Chunk, float]]:
         """Tìm kiếm BM25, trả về [(Chunk, score)] đã sort."""
+        if not self.chunks:
+            return []
         query_tokens = _tokenize(query)
         if self._use_lib:
             scores = self._bm25.get_scores(query_tokens)
@@ -316,10 +321,17 @@ class DenseIndex:
         self._encoder = None
         self._is_tfidf_fallback = False
 
-        # Load vectors nếu đã có
+        # Load vectors nếu đã có và khớp kích thước corpus
         if self.vectors_path and self.vectors_path.exists():
-            self._vectors = np.load(str(self.vectors_path))
-            logger.info("Đã load vectors từ %s, shape=%s", self.vectors_path, self._vectors.shape)
+            vecs = np.load(str(self.vectors_path))
+            if vecs.ndim == 2 and vecs.shape[0] == len(self.chunks):
+                self._vectors = vecs
+                logger.info("Đã load vectors từ %s, shape=%s", self.vectors_path, self._vectors.shape)
+            else:
+                logger.warning(
+                    "Bỏ qua vectors %s (shape %s != %d chunks).",
+                    self.vectors_path, vecs.shape, len(self.chunks),
+                )
 
     def _get_encoder(self):
         if self._encoder is not None:
@@ -336,7 +348,7 @@ class DenseIndex:
             texts = [c.full_text for c in self.chunks]
             vect = TfidfVectorizer(ngram_range=(1, 2), max_features=5000, sublinear_tf=True)
             X = vect.fit_transform(texts)
-            svd = TruncatedSVD(n_components=min(128, X.shape[1] - 1), random_state=42)
+            svd = TruncatedSVD(n_components=min(128, max(1, X.shape[1] - 1)), random_state=42)
             svd.fit(X)
             self._encoder = (vect, svd)
             self._is_tfidf_fallback = True
@@ -345,9 +357,10 @@ class DenseIndex:
     def _encode_texts(self, texts: list[str]) -> np.ndarray:
         enc = self._get_encoder()
         if self._is_tfidf_fallback:
+            from sklearn.preprocessing import normalize
             vect, svd = enc
             X = vect.transform(texts)
-            return svd.transform(X).astype(np.float32)
+            return normalize(svd.transform(X)).astype(np.float32)
         else:
             prefix = "query: "
             return enc.encode(
@@ -363,7 +376,7 @@ class DenseIndex:
             prefix = "passage: "
             self._vectors = enc.encode(
                 [prefix + t for t in texts],
-                batch_size=32, show_progress_bar=True, normalize_embeddings=True,
+                batch_size=32, show_progress_bar=False, normalize_embeddings=True,
             )
         else:
             self._vectors = self._encode_texts(texts)
@@ -378,6 +391,8 @@ class DenseIndex:
 
     def search(self, query: str, top_k: int = 30) -> list[tuple[Chunk, float]]:
         """Tìm kiếm dense, trả về [(Chunk, cosine_score)]."""
+        if not self.chunks:
+            return []
         if self._vectors is None:
             self.encode_corpus()
 
@@ -385,7 +400,7 @@ class DenseIndex:
         if q_vec.ndim == 1:
             q_vec = q_vec.reshape(1, -1)
 
-        # Cosine similarity (vectors đã normalize)
-        scores = (self._vectors @ q_vec.T).squeeze()
+        # Cosine similarity (vectors đã L2-normalize)
+        scores = (self._vectors @ q_vec.T).ravel()
         top_idx = np.argsort(scores)[::-1][:top_k]
         return [(self.chunks[i], float(scores[i])) for i in top_idx]

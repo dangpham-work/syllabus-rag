@@ -124,6 +124,32 @@ class HybridRetriever:
         for chunk in bm25_index.chunks:
             self._course_index[chunk.course_code] = chunk.course_name
 
+    def _search_sources(
+        self,
+        query: str,
+        filter_course: Optional[str] = None,
+    ) -> tuple[list[tuple[Chunk, float]], list[tuple[Chunk, float]], list[tuple[Chunk, float]], Optional[str]]:
+        """Chạy BM25 + Dense một lần, trả về (fused, bm25_results, dense_results, detected_course)."""
+        mention = detect_course_mention(query, self._course_index)
+        detected_course = mention[0] if mention else None
+
+        if filter_course is None and detected_course:
+            filter_course = detected_course
+            logger.debug("Nhận diện môn: %s (%s)", filter_course, mention[1])
+
+        bm25_results = self.bm25.search(query, top_k=self.bm25_top_k)
+        dense_results = self.dense.search(query, top_k=self.dense_top_k)
+
+        if filter_course:
+            bm25_filtered = [(c, s) for c, s in bm25_results if c.course_code == filter_course]
+            dense_filtered = [(c, s) for c, s in dense_results if c.course_code == filter_course]
+        else:
+            bm25_filtered = bm25_results
+            dense_filtered = dense_results
+
+        fused = reciprocal_rank_fusion([bm25_filtered, dense_filtered], k=self.rrf_k)
+        return fused, bm25_results, dense_results, detected_course
+
     def retrieve(
         self,
         query: str,
@@ -144,23 +170,7 @@ class HybridRetriever:
         list[(Chunk, rrf_score)]
         """
         top_k = top_k or self.rerank_in
-
-        # Tự động nhận diện môn nếu không chỉ định
-        if filter_course is None:
-            mention = detect_course_mention(query, self._course_index)
-            if mention:
-                filter_course = mention[0]
-                logger.debug("Nhận diện môn: %s (%s)", filter_course, mention[1])
-
-        bm25_results = self.bm25.search(query, top_k=self.bm25_top_k)
-        dense_results = self.dense.search(query, top_k=self.dense_top_k)
-
-        # Filter theo môn nếu cần
-        if filter_course:
-            bm25_results = [(c, s) for c, s in bm25_results if c.course_code == filter_course]
-            dense_results = [(c, s) for c, s in dense_results if c.course_code == filter_course]
-
-        fused = reciprocal_rank_fusion([bm25_results, dense_results], k=self.rrf_k)
+        fused, _, _, _ = self._search_sources(query, filter_course=filter_course)
         return fused[:top_k]
 
     def retrieve_with_reranker(
@@ -179,40 +189,40 @@ class HybridRetriever:
         top_k : số kết quả cuối (mặc định = context_k)
         """
         top_k = top_k or self.context_k
-        candidates = self.retrieve(query, top_k=self.rerank_in, filter_course=filter_course)
+        fused, bm25_results, dense_results, detected_course = self._search_sources(
+            query, filter_course=filter_course
+        )
+        candidates = fused[: self.rerank_in]
 
         if not candidates or reranker_model is None:
             return candidates[:top_k]
 
-        # Build reranker features
         from syllabus_core.models.train_reranker import build_reranker_features
-        bm25_results = self.bm25.search(query, top_k=self.bm25_top_k)
-        dense_results = self.dense.search(query, top_k=self.dense_top_k)
+
         bm25_rank_map = {c.chunk_id: r + 1 for r, (c, _) in enumerate(bm25_results)}
         dense_rank_map = {c.chunk_id: r + 1 for r, (c, _) in enumerate(dense_results)}
         bm25_score_map = {c.chunk_id: s for c, s in bm25_results}
         dense_score_map = {c.chunk_id: s for c, s in dense_results}
 
-        mention = detect_course_mention(query, self._course_index)
-        detected_course = mention[0] if mention else None
-
         import numpy as np
-        X_feat = []
-        for chunk, rrf_score in candidates:
-            feat = build_reranker_features(
-                query=query,
-                chunk=chunk,
-                bm25_score=bm25_score_map.get(chunk.chunk_id, 0.0),
-                cosine_score=dense_score_map.get(chunk.chunk_id, 0.0),
-                bm25_rank=bm25_rank_map.get(chunk.chunk_id, 999),
-                dense_rank=dense_rank_map.get(chunk.chunk_id, 999),
-                chunk_section=chunk.section,
-                detected_course=detected_course,
+        X_feat = [
+            list(
+                build_reranker_features(
+                    query=query,
+                    chunk=chunk,
+                    bm25_score=bm25_score_map.get(chunk.chunk_id, 0.0),
+                    cosine_score=dense_score_map.get(chunk.chunk_id, 0.0),
+                    bm25_rank=bm25_rank_map.get(chunk.chunk_id, 999),
+                    dense_rank=dense_rank_map.get(chunk.chunk_id, 999),
+                    chunk_section=chunk.section,
+                    detected_course=detected_course,
+                ).values()
             )
-            X_feat.append(list(feat.values()))
+            for chunk, _ in candidates
+        ]
 
         try:
-            scores = reranker_model.predict(np.array(X_feat))
+            scores = reranker_model.predict(np.asarray(X_feat, dtype=np.float32))
             ranked = sorted(zip(candidates, scores), key=lambda x: x[1], reverse=True)
             return [(c, float(s)) for (c, _), s in ranked[:top_k]]
         except Exception as e:

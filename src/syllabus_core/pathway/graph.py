@@ -10,6 +10,7 @@ Dùng:
 
 from __future__ import annotations
 
+import heapq
 import json
 import logging
 from dataclasses import dataclass, field
@@ -252,6 +253,9 @@ class PrerequisiteGraph:
             logger.info("Đã load %s vào graph.", xlsx_path.name)
         except Exception as e:
             logger.error("Lỗi đọc xlsx: %s", e)
+        finally:
+            if "wb" in locals():
+                wb.close()
 
     # ------------------------------------------------------------------
     # Kiểm tra
@@ -315,39 +319,8 @@ class PrerequisiteGraph:
         return self._edges
 
     def topological_sort(self) -> list[str]:
-        """Sắp xếp topo toàn bộ đồ thị theo thuật toán Kahn, trả về list mã môn."""
-        in_degree: dict[str, int] = {code: 0 for code in self._nodes}
-        for code in self._nodes:
-            for neighbor in self._edges.get(code, set()):
-                if neighbor in in_degree:
-                    in_degree[neighbor] += 1
-
-        ready = sorted(
-            [code for code, deg in in_degree.items() if deg == 0],
-            key=lambda c: (
-                self._nodes[c].recommended_semester,
-                self._nodes[c].avg_bloom_level,
-                c,
-            ),
-        )
-        order: list[str] = []
-        while ready:
-            code = ready.pop(0)
-            order.append(code)
-            for neighbor in sorted(self._edges.get(code, set())):
-                if neighbor not in in_degree:
-                    continue
-                in_degree[neighbor] -= 1
-                if in_degree[neighbor] == 0:
-                    ready.append(neighbor)
-                    ready.sort(
-                        key=lambda c: (
-                            self._nodes[c].recommended_semester,
-                            self._nodes[c].avg_bloom_level,
-                            c,
-                        )
-                    )
-        return order
+        """Sắp xếp topo toàn bộ đồ thị theo thuật toán Kahn + min-heap O((V + E) log V)."""
+        return [n.code for n in kahn_heap_sort(self._nodes, self._edges)]
 
     def to_dict(self) -> dict:
         return {
@@ -362,6 +335,51 @@ class PrerequisiteGraph:
             "edges": {a: sorted(b) for a, b in self._edges.items()},
             "discrepancies": self.get_discrepancies(),
         }
+
+
+def kahn_heap_sort(
+    nodes: dict[str, CourseNode],
+    edges: dict[str, set[str]],
+    subset: set[str] | None = None,
+    priority_fn=None,
+) -> list[CourseNode]:
+    """Thuật toán Kahn dùng min-heap O((V + E) log V), dùng chung cho Graph & Planner."""
+    if priority_fn is None:
+        def priority_fn(n: CourseNode):
+            return (n.recommended_semester, n.avg_bloom_level, n.code)
+
+    nodes_set = subset if subset is not None else set(nodes.keys())
+    in_degree: dict[str, int] = {code: 0 for code in nodes_set}
+
+    for code in nodes_set:
+        for neighbor in edges.get(code, set()):
+            if neighbor in nodes_set:
+                in_degree[neighbor] = in_degree.get(neighbor, 0) + 1
+
+    heap: list[tuple] = []
+    for code in nodes_set:
+        if in_degree.get(code, 0) == 0 and code in nodes:
+            node = nodes[code]
+            heapq.heappush(heap, (priority_fn(node), code))
+
+    result: list[CourseNode] = []
+    while heap:
+        _, code = heapq.heappop(heap)
+        result.append(nodes[code])
+        for neighbor in sorted(edges.get(code, set())):
+            if neighbor not in nodes_set:
+                continue
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0 and neighbor in nodes:
+                n_node = nodes[neighbor]
+                heapq.heappush(heap, (priority_fn(n_node), neighbor))
+
+    if len(result) < len(nodes_set):
+        logger.warning(
+            "Phát hiện chu trình trong đồ thị! %d/%d môn được sắp xếp.",
+            len(result), len(nodes_set),
+        )
+    return result
 
 
 # Alias tương thích với tests/test_planner.py
