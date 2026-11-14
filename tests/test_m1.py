@@ -19,7 +19,9 @@ from src.syllabus_core.models.train_section import SectionClassifierBundle
 
 def test_m1_split_valid():
     split_file = Path("data/processed/m1_split.csv")
-    assert split_file.exists(), "Tệp data/processed/m1_split.csv không tồn tại"
+    if not split_file.exists():
+        split_file = Path("m1_split.csv")
+    assert split_file.exists(), "Tệp data/processed/m1_split.csv và m1_split.csv đều không tồn tại"
     df = pd.read_csv(split_file)
     assert len(df) == 54, f"Số lượng môn trong split ({len(df)}) phải là 54"
     counts = df["split"].value_counts().to_dict()
