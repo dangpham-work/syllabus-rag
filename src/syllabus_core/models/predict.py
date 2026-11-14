@@ -187,19 +187,39 @@ def load_models(models_dir: str | Path = "models/") -> dict[str, Any]:
 # Bloom prediction (M2)
 # ---------------------------------------------------------------------------
 
-def predict_bloom(text: str, model: dict | Any) -> dict:
-    """
-    Phân loại một CLO vào mức Bloom.
+_RULE_FALLBACK_PROBS = {str(i): 0.08 for i in range(7)}
 
-    Parameters
-    ----------
-    text : chuỗi CLO tiếng Việt
-    model : dict {clf, vectorizer, feature_type} hoặc sklearn model hoặc None (rule fallback)
 
-    Returns
-    -------
-    dict: label, label_name, confidence, probabilities
-    """
+def _rule_bloom_result(text: str) -> dict:
+    """Phân loại Bloom 1 câu bằng rule fallback (dùng chung cho single & batch)."""
+    label = predict_bloom_rule(text)
+    probs = dict(_RULE_FALLBACK_PROBS)
+    probs[str(label)] = 0.52
+    return {
+        "label": label,
+        "label_name": BLOOM_LABELS[label],
+        "confidence": 0.52,
+        "probabilities": probs,
+    }
+
+
+def predict_bloom_batch(texts: list[str], model: Any) -> list[dict]:
+    """Phân loại batch CLO (vector hóa khi có sklearn/LightGBM model)."""
+    if not texts:
+        return []
+
+    if isinstance(model, dict):
+        clf = model.get("clf")
+        vectorizer = model.get("vectorizer")
+        feature_type = model.get("feature_type", "tfidf")
+    else:
+        clf = model
+        vectorizer = None
+        feature_type = "tfidf"
+
+    if clf is None:
+        return [_rule_bloom_result(t) for t in texts]
+
     import numpy as np
     try:
         from src.syllabus_core.features.build_features import (
@@ -212,52 +232,32 @@ def predict_bloom(text: str, model: dict | Any) -> dict:
             build_tfidf_features,
         )
 
-    if isinstance(model, dict):
-        clf = model.get("clf")
-        vectorizer = model.get("vectorizer")
-        feature_type = model.get("feature_type", "tfidf")
+    if feature_type == "embedding":
+        X = build_embedding_features(texts)
     else:
-        clf = model
-        vectorizer = None
-        feature_type = "tfidf"
+        X, _ = build_tfidf_features(texts, vectorizer=vectorizer)
 
-    if clf is None:
-        label = predict_bloom_rule(text)
-        probs = {str(i): 0.08 for i in range(7)}
-        probs[str(label)] = 0.52
-        return {
+    probas = clf.predict_proba(X)
+    classes = getattr(clf, "classes_", None)
+    results: list[dict] = []
+    for proba in probas:
+        best_idx = int(np.argmax(proba))
+        label = int(classes[best_idx]) if classes is not None else best_idx
+        results.append({
             "label": label,
-            "label_name": BLOOM_LABELS[label],
-            "confidence": 0.52,
-            "probabilities": probs,
-        }
-
-    if feature_type == "tfidf" and vectorizer:
-        X, _ = build_tfidf_features([text], vectorizer=vectorizer)
-    elif feature_type == "embedding":
-        X = build_embedding_features([text])
-    else:
-        X, _ = build_tfidf_features([text], vectorizer=vectorizer)
-
-    proba = clf.predict_proba(X)[0]
-    label = int(np.argmax(proba))
-    if hasattr(clf, "classes_"):
-        label = int(clf.classes_[np.argmax(proba)])
-
-    return {
-        "label": label,
-        "label_name": BLOOM_LABELS.get(label, str(label)),
-        "confidence": float(proba.max()),
-        "probabilities": {
-            str(int(clf.classes_[i]) if hasattr(clf, "classes_") else i): float(p)
-            for i, p in enumerate(proba)
-        },
-    }
+            "label_name": BLOOM_LABELS.get(label, str(label)),
+            "confidence": float(proba[best_idx]),
+            "probabilities": {
+                str(int(classes[i]) if classes is not None else i): float(p)
+                for i, p in enumerate(proba)
+            },
+        })
+    return results
 
 
-def predict_bloom_batch(texts: list[str], model: Any) -> list[dict]:
-    """Phân loại batch CLO."""
-    return [predict_bloom(t, model) for t in texts]
+def predict_bloom(text: str, model: dict | Any) -> dict:
+    """Phân loại một CLO vào mức Bloom."""
+    return predict_bloom_batch([text], model)[0]
 
 
 def classify_clo_endpoint(text: str, model: Any) -> dict:
@@ -285,6 +285,17 @@ def extract_paragraphs_from_pages(page_texts: List[Tuple[int, str]]) -> List[Dic
                 continue
             paragraphs.append({"page": page_num, "text": p})
     return paragraphs
+
+
+def _parse_course_list(val: str) -> List[str]:
+    """Tách danh sách mã/tên học phần từ trường văn bản tiên quyết hoặc song hành."""
+    if not val or fold_text(val).strip(" .") in ("khong", "khong co", "-", "none"):
+        return []
+    codes = re.findall(r"\b\d{6}\b", val)
+    if codes:
+        return codes
+    parts = [p.strip(" .") for p in re.split(r"[,;]", val) if p.strip(" .")]
+    return [p for p in parts if fold_text(p) not in ("khong", "khong co", "-", "none")]
 
 
 def extract_fields_from_general_info(text: str) -> Dict[str, Any]:
@@ -316,22 +327,9 @@ def extract_fields_from_general_info(text: str) -> Dict[str, Any]:
             if m and not fields["credits"]:
                 fields["credits"] = int(m.group(1))
         elif re.search(r"(tien quyet|hoc truoc|phan.*[rt]uoc)", fl):
-            if val and fold_text(val).strip(" .") not in ("khong", "khong co", "-", "none"):
-                codes = re.findall(r"\b\d{6}\b", val)
-                if codes:
-                    fields["prerequisites"].extend(codes)
-                else:
-                    parts = [p.strip(" .") for p in re.split(r"[,;]", val) if p.strip(" .")]
-                    clean_parts = [p for p in parts if fold_text(p) not in ("khong", "khong co", "-", "none")]
-                    fields["prerequisites"].extend(clean_parts)
+            fields["prerequisites"].extend(_parse_course_list(val))
         elif "song hanh" in fl:
-            if val and fold_text(val).strip(" .") not in ("khong", "khong co", "-", "none"):
-                codes = re.findall(r"\b\d{6}\b", val)
-                if codes:
-                    fields["corequisites"].extend(codes)
-                else:
-                    parts = [p.strip(" .") for p in re.split(r"[,;]", val) if p.strip(" .")]
-                    fields["corequisites"].extend([p for p in parts if fold_text(p) != "khong"])
+            fields["corequisites"].extend(_parse_course_list(val))
 
     return fields
 
@@ -468,29 +466,93 @@ def _extract_pages_with_pdftoppm(pdf_path: Path) -> List[Tuple[int, str]]:
 
 
 def _enrich_clos_with_bloom(clos: List[Dict[str, Any]], bloom_model: Any) -> List[Dict[str, Any]]:
-    """Điền thông tin phân loại Bloom cho từng CLO trong danh sách."""
+    """Điền thông tin phân loại Bloom cho từng CLO bằng suy luận theo batch."""
     enriched: List[Dict[str, Any]] = []
+    pending_idx: List[int] = []
+    pending_texts: List[str] = []
+
     for idx, clo in enumerate(clos, start=1):
         item = dict(clo)
         item.setdefault("clo_id", f"CLO{idx}")
-        text = str(item.get("text") or "")
-
         if item.get("bloom_confidence") is None and item.get("confidence") is not None:
             item["bloom_confidence"] = item["confidence"]
         if item.get("level_raw") is None and item.get("level") is not None:
             item["level_raw"] = item["level"]
 
+        text = str(item.get("text") or "")
         if text.strip() and (bloom_model is not None or item.get("bloom_level") is None):
-            pred = predict_bloom(text, bloom_model)
-            item["bloom_level"] = pred["label"]
-            item["bloom_name"] = pred["label_name"]
-            item["bloom_confidence"] = pred["confidence"]
-            item["bloom_label"] = pred["label"]
+            pending_idx.append(len(enriched))
+            pending_texts.append(text)
         elif item.get("bloom_level") is not None and not item.get("bloom_name"):
             item["bloom_name"] = BLOOM_LABELS.get(int(item["bloom_level"]), str(item["bloom_level"]))
 
         enriched.append(item)
+
+    if pending_texts:
+        preds = predict_bloom_batch(pending_texts, bloom_model)
+        for pos, pred in zip(pending_idx, preds):
+            item = enriched[pos]
+            item["bloom_level"] = pred["label"]
+            item["bloom_name"] = pred["label_name"]
+            item["bloom_confidence"] = pred["confidence"]
+            item["bloom_label"] = pred["label"]
+
     return enriched
+
+
+_STATIC_TABLE_CACHE: Dict[str, Tuple[float, Any]] = {}
+
+
+def _load_syllabus_fixes(fixes_file: Path = Path("data/interim/syllabus_fixes.json")) -> Dict[str, Any]:
+    """Đọc và cache syllabus_fixes.json theo mtime để tránh đọc đĩa lặp lại."""
+    if not fixes_file.exists():
+        return {}
+    key = str(fixes_file)
+    mtime = fixes_file.stat().st_mtime
+    cached = _STATIC_TABLE_CACHE.get(key)
+    if cached and cached[0] == mtime:
+        return cached[1]
+    try:
+        with fixes_file.open(encoding="utf-8") as f:
+            data = json.load(f)
+        _STATIC_TABLE_CACHE[key] = (mtime, data)
+        return data
+    except Exception as exc:
+        logger.warning("Lỗi đọc %s: %s", fixes_file, exc)
+        return {}
+
+
+def _load_clos_raw_by_course(clos_raw_file: Path = Path("data/interim/clos_raw.csv")) -> Dict[str, List[Dict[str, Any]]]:
+    """Đọc và cache clos_raw.csv nhóm theo course_code."""
+    if not clos_raw_file.exists():
+        return {}
+    key = str(clos_raw_file)
+    mtime = clos_raw_file.stat().st_mtime
+    cached = _STATIC_TABLE_CACHE.get(key)
+    if cached and cached[0] == mtime:
+        return cached[1]
+    by_course: Dict[str, List[Dict[str, Any]]] = {}
+    with clos_raw_file.open(encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            code = r.get("course_code")
+            if not code:
+                continue
+            lvl_raw = r.get("level_raw")
+            lvl = None
+            if lvl_raw:
+                try:
+                    lvl = float(lvl_raw.replace(",", "."))
+                except ValueError:
+                    pass
+            by_course.setdefault(code, []).append({
+                "clo_id": r.get("clo_id"),
+                "text": r.get("text"),
+                "level": lvl,
+                "level_raw": lvl,
+                "bloom_label": None,
+            })
+    _STATIC_TABLE_CACHE[key] = (mtime, by_course)
+    return by_course
 
 
 # ---------------------------------------------------------------------------
@@ -609,42 +671,19 @@ def analyze_pdf(
     credits_val = int(extracted_fields.get("credits") or 3)
     prerequisites_val = list(extracted_fields.get("prerequisites") or [])
 
-    fixes_file = Path("data/interim/syllabus_fixes.json")
-    if fixes_file.exists() and course_code != "unknown":
-        try:
-            with fixes_file.open(encoding="utf-8") as f:
-                fixes_map = json.load(f)
-            if course_code in fixes_map:
-                fix_data = fixes_map[course_code]
-                if fix_data.get("credits") is not None:
-                    credits_val = int(fix_data["credits"])
-                if fix_data.get("prerequisites") is not None:
-                    prerequisites_val = list(fix_data["prerequisites"])
-        except Exception as exc:
-            logger.warning("Lỗi đọc syllabus_fixes.json: %s", exc)
+    if course_code != "unknown":
+        fixes_map = _load_syllabus_fixes()
+        fix_data = fixes_map.get(course_code)
+        if fix_data:
+            if fix_data.get("credits") is not None:
+                credits_val = int(fix_data["credits"])
+            if fix_data.get("prerequisites") is not None:
+                prerequisites_val = list(fix_data["prerequisites"])
 
     # 5. Trích xuất CLO và gán Bloom M2
     clos = extract_clos_from_text(sections_dict.get("course_learning_outcomes", ""))
     if not clos and course_code != "unknown":
-        clos_raw_file = Path("data/interim/clos_raw.csv")
-        if clos_raw_file.exists():
-            with clos_raw_file.open(encoding="utf-8") as f:
-                for r in csv.DictReader(f):
-                    if r.get("course_code") == course_code:
-                        lvl_raw = r.get("level_raw")
-                        lvl = None
-                        if lvl_raw:
-                            try:
-                                lvl = float(lvl_raw.replace(",", "."))
-                            except ValueError:
-                                pass
-                        clos.append({
-                            "clo_id": r.get("clo_id"),
-                            "text": r.get("text"),
-                            "level": lvl,
-                            "level_raw": lvl,
-                            "bloom_label": None,
-                        })
+        clos = [dict(c) for c in _load_clos_raw_by_course().get(course_code, [])]
 
     clos = _enrich_clos_with_bloom(clos, bloom_model)
     missing_sections = [sec for sec in SECTIONS_ORDER if not sections_dict.get(sec)]

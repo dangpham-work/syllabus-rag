@@ -11,10 +11,9 @@ Dùng:
 from __future__ import annotations
 
 import logging
-from collections import deque
 from typing import Optional
 
-from syllabus_core.pathway.graph import CourseNode, PrerequisiteGraph
+from syllabus_core.pathway.graph import CourseNode, PrerequisiteGraph, kahn_heap_sort
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,7 @@ def kahn_topological_sort(
     priority_fn=None,
 ) -> list[CourseNode]:
     """
-    Sắp xếp topo bằng thuật toán Kahn (1962).
+    Sắp xếp topo bằng thuật toán Kahn + min-heap O((V + E) log V).
 
     Parameters
     ----------
@@ -42,51 +41,8 @@ def kahn_topological_sort(
     -------
     list[CourseNode] theo thứ tự topo (tiên quyết trước)
     """
-    if priority_fn is None:
-        def priority_fn(n: CourseNode):
-            return (n.recommended_semester, n.avg_bloom_level)
-
-    # Tính in-degree trong subset
     nodes_set = subset if subset is not None else set(graph.nodes.keys())
-    in_degree: dict[str, int] = {code: 0 for code in nodes_set}
-
-    for code in nodes_set:
-        for neighbor in graph.edges.get(code, set()):
-            if neighbor in nodes_set:
-                in_degree[neighbor] = in_degree.get(neighbor, 0) + 1
-
-    # Hàng đợi ưu tiên: các môn có in-degree = 0
-    ready = sorted(
-        [graph.nodes[c] for c in nodes_set if in_degree.get(c, 0) == 0 and c in graph.nodes],
-        key=priority_fn,
-    )
-
-    result: list[CourseNode] = []
-    while ready:
-        node = ready.pop(0)
-        result.append(node)
-        for neighbor_code in sorted(graph.edges.get(node.code, set())):
-            if neighbor_code not in nodes_set:
-                continue
-            in_degree[neighbor_code] -= 1
-            if in_degree[neighbor_code] == 0 and neighbor_code in graph.nodes:
-                # Chèn đúng vị trí theo priority
-                neighbor_node = graph.nodes[neighbor_code]
-                inserted = False
-                for i, r in enumerate(ready):
-                    if priority_fn(r) > priority_fn(neighbor_node):
-                        ready.insert(i, neighbor_node)
-                        inserted = True
-                        break
-                if not inserted:
-                    ready.append(neighbor_node)
-
-    if len(result) < len(nodes_set):
-        logger.warning(
-            "Phát hiện chu trình trong đồ thị! %d/%d môn được sắp xếp.",
-            len(result), len(nodes_set),
-        )
-    return result
+    return kahn_heap_sort(graph.nodes, graph.edges, subset=nodes_set, priority_fn=priority_fn)
 
 
 # ---------------------------------------------------------------------------
@@ -206,24 +162,25 @@ class LearningPlanner:
         terms: list[dict] = []
         remaining = {c for c in to_learn if c in self.graph.nodes}
         placed_codes = set(completed_set)
+        prereqs_in_plan = {
+            c: (self.graph._reverse.get(c, set()) & remaining)
+            for c in remaining
+        }
 
         while remaining:
             eligible = [
                 self.graph.nodes[c]
                 for c in remaining
-                if (self.graph._reverse.get(c, set()) & to_learn) <= placed_codes
+                if prereqs_in_plan[c] <= placed_codes
             ]
 
             if not eligible:
                 # Chỉ xảy ra khi đồ thị có chu trình trong tập remaining
                 fallback_code = min(
                     remaining,
-                    key=lambda c: (
-                        len((self.graph._reverse.get(c, set()) & to_learn) - placed_codes),
-                        c,
-                    ),
+                    key=lambda c: (len(prereqs_in_plan[c] - placed_codes), c),
                 )
-                unmet = (self.graph._reverse.get(fallback_code, set()) & to_learn) - placed_codes
+                unmet = prereqs_in_plan[fallback_code] - placed_codes
                 node = self.graph.nodes[fallback_code]
                 warnings.append(
                     f"Môn {node.name} ({node.code}) cần tiên quyết chưa được sắp xếp: "
