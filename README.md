@@ -1,131 +1,162 @@
 # syllabus-rag
-Hệ thống phân tích đề cương môn học kết hợp RAG: Trích xuất cấu trúc đề cương PDF scan, phân loại chuẩn đầu ra Bloom, hỏi đáp có trích dẫn và gợi ý lộ trình học (Trường ĐH Sài Gòn - SGU).
+
+Hệ thống phân tích đề cương môn học kết hợp RAG cho Trường Đại học Sài Gòn (SGU — Mốc 5): trích xuất cấu trúc đề cương PDF, phân loại chuẩn đầu ra Bloom, hỏi đáp có trích dẫn nguồn và gợi ý lộ trình học theo tiên quyết.
 
 ---
 
-## Chạy API (FastAPI Backend - TV3)
+## 1. Kiến trúc & Cấu trúc thư mục
 
-Tầng API cung cấp các RESTful endpoints phục vụ trích xuất đề cương, phân loại chuẩn đầu ra (CLO), hỏi đáp RAG và gợi ý lộ trình học tập.
+```text
+syllabus-rag/
+├── api/                        # FastAPI backend (REST endpoints & Pydantic v2 schemas)
+│   ├── main.py
+│   └── schemas.py
+├── app/                        # Giao diện Streamlit 3 tab & HTTP client
+│   ├── api_client.py
+│   └── app.py
+├── config/
+│   └── params.yaml             # Cấu hình tham số M3 retrieval & LLM
+├── data/
+│   ├── external/               # DanhMuc_KyThuatPhanMem.xlsx (từ Drive, nếu có)
+│   ├── interim/                # Dữ liệu OCR trung gian
+│   ├── processed/syllabi/      # Đề cương JSON đã chuẩn hoá (mẫu sẵn: 841020, 841108, 841401)
+│   └── raw/                    # PDF gốc (symlink/dữ liệu Drive ngoài git)
+├── docs/                       # Tài liệu thiết kế, schema, guideline gán nhãn
+├── models/
+│   ├── metadata.yaml           # Metadata & version của các mô hình M1/M2/M3
+│   └── section_clf.pkl         # Mô hình M1 phân loại 11 mục đề cương
+├── notebooks/                  # Notebooks khám phá, huấn luyện & suy luận
+├── reports/
+│   ├── technical_report.md     # Báo cáo kỹ thuật Mốc 5
+│   └── figures/
+├── results/
+│   ├── latency.json            # Đo độ trễ thực tế (20 requests/endpoint)
+│   └── metrics.json            # Chỉ số đánh giá M1/M2/M3
+├── samples/                    # Request/Response JSON mẫu & syllabi mẫu
+├── src/syllabus_core/          # Mã nguồn lõi: data, features, models, retrieval, pathway, evaluation, visualization
+├── tests/                      # Bộ kiểm thử tự động
+│   ├── test_m1.py
+│   ├── test_planner.py
+│   ├── test_api.py
+│   └── test_tv4_app.py
+├── m1_split.csv                # Bảng chia 54 môn (38 train / 8 val / 8 test)
+├── pytest.ini
+├── requirements.txt
+└── .env.example
+```
 
-### 1. Cài đặt môi trường
+---
 
-Yêu cầu: Python >= 3.10 (khuyến nghị Python 3.12).
+## 2. Cài đặt môi trường (`.venv` + `requirements.txt`)
+
+Yêu cầu Python 3.12 (hoặc >= 3.10).
 
 ```bash
-# Tạo môi trường ảo
+# Tạo và kích hoạt môi trường ảo
 python3 -m venv .venv
+source .venv/bin/activate        # macOS / Linux
+# .venv\Scripts\activate         # Windows PowerShell
 
-# Kích hoạt môi trường ảo
-# Trên macOS / Linux:
-source .venv/bin/activate
-# Trên Windows:
-# .venv\Scripts\activate
-
-# Cài đặt các thư viện cần thiết
+# Cài đặt thư viện
 pip install -r requirements.txt
+
+# Tạo tệp cấu hình biến môi trường
+cp .env.example .env
 ```
 
-### 2. Khởi chạy máy chủ API (Development Server)
+### Lưu ý về dữ liệu Google Drive và API keys (`.env`)
 
-Khởi chạy máy chủ FastAPI với Uvicorn:
+- **Dữ liệu Drive**: Bộ PDF đề cương gốc (`data/raw/*.pdf`), file gán nhãn đầy đủ (`data/processed/sections_labeled.csv`), toàn bộ 54 JSON đề cương và `data/external/DanhMuc_KyThuatPhanMem.xlsx` được lưu ngoài repo trên Google Drive (theo `.gitignore`). Trong repo chỉ đóng gói sẵn `m1_split.csv`, 3 đề cương JSON mẫu (`841020.json`, `841108.json`, `841401.json`) trong `data/processed/syllabi/` và `samples/syllabi/`, cùng artifact `models/section_clf.pkl`. Các test phụ thuộc file PDF/CSV trên Drive sẽ tự động `skip` nếu thiếu tệp ngoài repo.
+- **API keys trong `.env`**:
+  - `GEMINI_API_KEY` (mặc định) và `GROQ_API_KEY` (dự phòng) dùng cho `/ask` khi gọi LLM thật.
+  - Khi cả hai khóa để trống, `RAGPipeline` mặc định chạy ở chế độ `mock` (`RAG_ALLOW_MOCK_FALLBACK=true`) để vẫn có thể thử nghiệm và kiểm thử cục bộ. Nếu đặt `RAG_ALLOW_MOCK_FALLBACK=false` (hoặc khi provider lỗi không có fallback), `/ask` sẽ trả HTTP `503` kèm `retrieved_chunks` và `retrieved` để giao diện hiển thị đoạn truy xuất.
+  - `API_URL` mặc định là `http://localhost:8000` (gốc server, không kèm tiền tố `/api/v1`).
+
+---
+
+## 3. Khởi chạy Backend (FastAPI) & Frontend (Streamlit)
+
+Mở 2 terminal tại thư mục gốc `syllabus-rag/`:
+
+**Terminal 1 — FastAPI API:**
 
 ```bash
-uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+.venv/bin/python3 -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Sau khi khởi chạy:
-- **API Base URL**: `http://127.0.0.1:8000`
-- **Tài liệu Swagger UI tương tác**: `http://127.0.0.1:8000/docs`
-- **Tài liệu ReDoc**: `http://127.0.0.1:8000/redoc`
-- **OpenAPI Schema**: `http://127.0.0.1:8000/openapi.json`
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
+- OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 
-### 3. Danh sách Endpoints (Tuần 1 - Mốc 1)
+**Terminal 2 — Streamlit App (3 tab: Hỏi đáp, Lộ trình học, Phân tích đề cương):**
 
-| Phương thức | Đường dẫn (URL) | Mô tả | Định dạng dữ liệu mẫu |
+```bash
+API_URL=http://127.0.0.1:8000 .venv/bin/python3 -m streamlit run app/app.py --server.address 127.0.0.1
+```
+
+Truy cập `http://127.0.0.1:8501`.
+
+---
+
+## 4. Danh sách FastAPI Routes & Schemas (`api/main.py`, `api/schemas.py`)
+
+| Phương thức | Đường dẫn | Request | Response chính |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/health` | Kiểm tra tình trạng hoạt động của API | `{"status": "ok", "service": "syllabus-rag-api"}` |
-| `POST` | `/api/v1/analyze-syllabus` | Trích xuất 10 mục của đề cương (File upload hoặc JSON `file_path`) | Xem `samples/analyze_syllabus_request.json` |
-| `POST` | `/api/v1/classify-clo` | Phân loại mức Bloom (0-6) cho CLO (`text` hoặc `texts`) | Xem `samples/classify_clo_request.json` |
-| `POST` | `/api/v1/ask` | Hỏi đáp RAG có trích dẫn nguồn bằng chứng | Xem `samples/ask_request.json` |
-| `POST` | `/api/v1/learning-path` | Gợi ý lộ trình học theo kỳ kèm môn tiên quyết & tín chỉ | Xem `samples/learning_path_request.json` |
+| `GET` | `/health` | — | `HealthResponse`: `status`, `version`, `models_loaded` |
+| `POST` | `/classify-clo` | `CLOClassifyRequest`: `{text}` hoặc `{texts}` | `CLOClassifyResponse`: `results[]` (`text`, `label`, `label_name`, `confidence`, `probabilities`, `model_version`), `model_version` |
+| `POST` | `/classify-clo/batch` | `CLOClassifyBatchRequest`: `{texts}` | `CLOClassifyResponse`: `results[]`, `model_version` |
+| `POST` | `/analyze-syllabus` | `multipart/form-data` (`file`: PDF) | `SyllabusAnalysisResponse`: `course_code`, `course_name`, `credits`, `prerequisites`, `clos[]`, `sections{}`, `missing_sections[]`, `model_version`, `processing_time_s` |
+| `POST` | `/ask` | `AskRequest`: `{question, course_filter?}` | `200`: `AskResponse` (`answer`, `citations[]`, `retrieved_chunks[]`, `provider_used`, `latency_ms`)<br>`503`: `{error, retrieved_chunks[], retrieved[]}` |
+| `POST` | `/learning-path` | `LearningPathRequest`: `{target_course, completed_courses[]}` | `LearningPathResponse`: `target_course`, `plan[]` (`term`, `courses[]`, `total_credits`), `warnings[]`, `soft_suggestions[]`, `total_courses`, `total_credits` |
+| `GET` | `/courses` | — | `CourseListResponse`: `courses[]` (`CourseSummary`), `total` |
+| `GET` | `/courses/{course_code}` | Path `course_code` | `CourseDetailResponse`: `code`, `name`, `credits`, `prerequisites[]`, `dependents[]`, `avg_bloom_level`, `recommended_semester`, `clos[]`, `sections{}` (`404` nếu không tồn tại) |
 
-### 4. Kiểm thử nhanh bằng `curl`
+### Kiểm thử nhanh bằng `curl`
 
-Kiểm tra Health Check:
 ```bash
-curl -X GET http://127.0.0.1:8000/health
-```
+# 1. Health check
+curl -s http://127.0.0.1:8000/health
 
-Phân loại mức độ Bloom cho CLO:
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/classify-clo \
+# 2. Phân loại CLO đơn lẻ & batch
+curl -s -X POST http://127.0.0.1:8000/classify-clo \
   -H "Content-Type: application/json" \
-  -d '{"texts": ["Áp dụng cấu trúc rẽ nhánh để giải quyết bài toán cơ bản."]}'
-```
+  -d '{"text": "Áp dụng UML để mô hình hoá hệ thống phần mềm"}'
 
-Hỏi đáp RAG:
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/ask \
+curl -s -X POST http://127.0.0.1:8000/classify-clo/batch \
   -H "Content-Type: application/json" \
-  -d '{"question": "Môn Cơ sở lập trình có môn tiên quyết không?", "course_code": "841020"}'
-```
+  -d '{"texts": ["Liệt kê các kiểu dữ liệu", "Thiết kế kiến trúc MVC"]}'
 
-Gợi ý lộ trình học:
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/learning-path \
+# 3. Hỏi đáp RAG
+curl -s -X POST http://127.0.0.1:8000/ask \
   -H "Content-Type: application/json" \
-  -d '{"target_courses": ["841108"], "passed_courses": ["841020"]}'
+  -d '{"question": "Học phần Cơ sở lập trình có yêu cầu học phần tiên quyết nào không?", "course_filter": "841020"}'
+
+# 4. Gợi ý lộ trình học
+curl -s -X POST http://127.0.0.1:8000/learning-path \
+  -H "Content-Type: application/json" \
+  -d '{"target_course": "841108", "completed_courses": ["841401"]}'
+
+# 5. Danh sách & chi tiết môn học
+curl -s http://127.0.0.1:8000/courses
+curl -s http://127.0.0.1:8000/courses/841020
 ```
 
-### 5. Chạy Unit Tests
+Các JSON request/response mẫu đầy đủ nằm trong thư mục `samples/`.
+
+---
+
+## 5. Chạy kiểm thử (`pytest`)
+
+Chạy toàn bộ bộ test từ thư mục `syllabus-rag/`:
 
 ```bash
-pytest tests/ -v
+.venv/bin/python3 -m pytest tests/ -v
 ```
 
-## Chạy app TV4 (Streamlit, Mốc 1)
+Hoặc chạy riêng từng nhóm:
 
-Sau khi cài `requirements.txt`, mở hai terminal tại thư mục gốc dự án.
-Trên Windows PowerShell:
-
-```powershell
-# Terminal 1: backend mock TV3
-.\.venv\Scripts\python.exe -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+```bash
+.venv/bin/python3 -m pytest tests/test_m1.py tests/test_planner.py -v
+.venv/bin/python3 -m pytest tests/test_api.py -v
+.venv/bin/python3 -m pytest tests/test_tv4_app.py -v
 ```
-
-```powershell
-# Terminal 2: app TV4
-$env:API_URL = "http://localhost:8000"
-.\.venv\Scripts\python.exe -m streamlit run app/app.py --server.address 127.0.0.1
-```
-
-Mở http://localhost:8501. `API_URL` là gốc server, **không kèm /api/v1**;
-app tự thêm tiền tố cho endpoint nghiệp vụ. Có thể đặt biến này trong `.env`
-ở thư mục gốc; biến môi trường đã đặt được ưu tiên. Không cần khóa Gemini/Groq
-để chạy mock. Trên macOS/Linux dùng `.venv/bin/python` và `export API_URL=...`.
-
-- Hỏi đáp: chọn một trong 3 môn mẫu hoặc tất cả, gửi câu hỏi, xem nguồn và đoạn trích.
-- Lộ trình: chọn môn đích và môn đã học không trùng nhau, xem kế hoạch mẫu.
-- Phân tích: upload PDF thật có mã 841020, 841108 hoặc 841401 trong tên, tối đa 10 MB.
-  Ví dụ `data/raw/841020.pdf`; nếu chưa có dữ liệu, tải từ
-  [danh sách nguồn](docs/tv4_selected_syllabi.md). Không đổi tên PDF môn khác chỉ để khớp mock.
-- Sidebar có nút kiểm tra API. Tắt backend để thử lỗi kết nối; input vẫn được giữ.
-
-### Giới hạn của bản thử nghiệm
-
-Backend chưa OCR hay chạy mô hình thật; lộ trình là fixture cố định. App luôn
-hiển thị nhãn mock và chặn PDF có mã chưa hỗ trợ để tránh fallback sai môn.
-Schema TV3 mục 6–10 đang chờ thống nhất: app sắp theo ý nghĩa trường về thứ tự
-SGU, giữ nguyên nội dung nguồn và báo mục Phụ trách chưa được API cung cấp.
-Trường chưa có dữ liệu không được tự coi là mục thiếu trong PDF.
-
-32 câu hỏi nháp nằm trong [docs/question_ideas.md](docs/question_ideas.md).
-Checklist và các điểm chờ nhóm xác nhận: [docs/tv4_milestone1.md](docs/tv4_milestone1.md).
-
-Kiểm thử riêng TV4 (tự bật/tắt một API test ở cổng trống; không cần API chạy sẵn):
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest tests/test_tv4_app.py -q
-```
-
-Các kiểm thử giao diện dùng [Streamlit AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest).
