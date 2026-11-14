@@ -228,9 +228,10 @@ with tab2:
                         f"📅 Học kỳ {term['term']} — {term['total_credits']} tín chỉ",
                         expanded=True,
                     ):
-                        cols = st.columns(len(term["courses"]) if term["courses"] else 1)
+                        col_count = min(len(term["courses"]), 3) if term["courses"] else 1
+                        cols = st.columns(col_count)
                         for i, course in enumerate(term["courses"]):
-                            with cols[i % len(cols)]:
+                            with cols[i % col_count]:
                                 st.markdown(
                                     f"""
                                     <div style="padding:10px;border-radius:8px;background:#f0f2f6;margin:4px">

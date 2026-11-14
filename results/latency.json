@@ -1,6 +1,6 @@
 {
-  "benchmark": "FastAPI TestClient(app) 20 requests per endpoint",
-  "measured_at": "2026-11-14T09:05:31.967339+00:00",
+  "benchmark": "FastAPI TestClient(app) 20 requests per endpoint (post-optimization)",
+  "measured_at": "2026-11-14T09:49:04.670895+00:00",
   "python_version": "3.12.5",
   "requests_per_endpoint": 20,
   "endpoints": {
@@ -9,88 +9,88 @@
       "status_codes": [
         200
       ],
-      "mean_ms": 0.757,
-      "p50_ms": 0.666,
-      "p95_ms": 0.985,
-      "min_ms": 0.609,
-      "max_ms": 2.009
+      "mean_ms": 1.664,
+      "p50_ms": 1.462,
+      "p95_ms": 1.94,
+      "min_ms": 1.093,
+      "max_ms": 5.215
     },
     "POST /classify-clo": {
       "n_requests": 20,
       "status_codes": [
         200
       ],
-      "mean_ms": 0.853,
-      "p50_ms": 0.755,
-      "p95_ms": 0.978,
-      "min_ms": 0.679,
-      "max_ms": 2.662
+      "mean_ms": 1.591,
+      "p50_ms": 1.506,
+      "p95_ms": 2.303,
+      "min_ms": 1.225,
+      "max_ms": 2.627
     },
     "POST /classify-clo/batch": {
       "n_requests": 20,
       "status_codes": [
         200
       ],
-      "mean_ms": 0.83,
-      "p50_ms": 0.825,
-      "p95_ms": 0.942,
-      "min_ms": 0.752,
-      "max_ms": 0.977
+      "mean_ms": 1.697,
+      "p50_ms": 1.643,
+      "p95_ms": 2.058,
+      "min_ms": 1.375,
+      "max_ms": 2.069
     },
     "POST /analyze-syllabus": {
       "n_requests": 20,
       "status_codes": [
         200
       ],
-      "mean_ms": 6.966,
-      "p50_ms": 1.173,
-      "p95_ms": 7.581,
-      "min_ms": 1.06,
-      "max_ms": 115.951
+      "mean_ms": 3.832,
+      "p50_ms": 3.513,
+      "p95_ms": 5.35,
+      "min_ms": 2.799,
+      "max_ms": 5.437
     },
     "POST /ask": {
       "n_requests": 20,
       "status_codes": [
         200
       ],
-      "mean_ms": 18.488,
-      "p50_ms": 1.385,
-      "p95_ms": 19.155,
-      "min_ms": 1.218,
-      "max_ms": 342.875
+      "mean_ms": 2.833,
+      "p50_ms": 2.742,
+      "p95_ms": 3.32,
+      "min_ms": 2.42,
+      "max_ms": 4.323
     },
     "POST /learning-path": {
       "n_requests": 20,
       "status_codes": [
         200
       ],
-      "mean_ms": 0.862,
-      "p50_ms": 0.835,
-      "p95_ms": 0.973,
-      "min_ms": 0.75,
-      "max_ms": 1.164
+      "mean_ms": 1.525,
+      "p50_ms": 1.457,
+      "p95_ms": 1.91,
+      "min_ms": 1.301,
+      "max_ms": 2.166
     },
     "GET /courses": {
       "n_requests": 20,
       "status_codes": [
         200
       ],
-      "mean_ms": 0.963,
-      "p50_ms": 0.812,
-      "p95_ms": 1.682,
-      "min_ms": 0.667,
-      "max_ms": 2.612
+      "mean_ms": 1.356,
+      "p50_ms": 1.276,
+      "p95_ms": 1.716,
+      "min_ms": 1.118,
+      "max_ms": 1.95
     },
     "GET /courses/{course_code}": {
       "n_requests": 20,
       "status_codes": [
         200
       ],
-      "mean_ms": 0.934,
-      "p50_ms": 0.911,
-      "p95_ms": 1.117,
-      "min_ms": 0.753,
-      "max_ms": 1.413
+      "mean_ms": 1.46,
+      "p50_ms": 1.454,
+      "p95_ms": 1.693,
+      "min_ms": 1.262,
+      "max_ms": 1.918
     }
   }
 }

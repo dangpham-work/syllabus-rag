@@ -20,6 +20,7 @@ from pathlib import Path
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 
 _ROOT_DIR = Path(__file__).parent.parent
 if str(_ROOT_DIR) not in sys.path:
@@ -177,25 +178,29 @@ app.add_middleware(
 # Helpers
 # ---------------------------------------------------------------------------
 
+MAX_UPLOAD_BYTES = 20 * 1024 * 1024  # 20 MB
+
+
 def _classify_clo_texts(texts: list[str]) -> CLOClassifyResponse:
-    """Chạy M2 Bloom classifier (hoặc rule fallback) và đọc model_version động."""
-    from src.syllabus_core.models.predict import get_model_version, predict_bloom
+    """Chạy M2 Bloom classifier (vectorized batch hoặc rule fallback) và đọc model_version động."""
+    from src.syllabus_core.models.predict import get_model_version, predict_bloom_batch
 
     models = _state.get("models") or {}
     bloom_model = models.get("bloom_model")
     version = get_model_version(models, "m2_bloom_classifier", default="m2-rule-v1")
 
-    results = []
-    for text in texts:
-        pred = predict_bloom(text, bloom_model)
-        results.append(CLOClassifyResult(
+    preds = predict_bloom_batch(texts, bloom_model)
+    results = [
+        CLOClassifyResult(
             text=text,
             label=pred["label"],
             label_name=pred["label_name"],
             confidence=pred["confidence"],
             probabilities=pred["probabilities"],
             model_version=version,
-        ))
+        )
+        for text, pred in zip(texts, preds)
+    ]
     return CLOClassifyResponse(results=results, model_version=version)
 
 
@@ -303,12 +308,17 @@ async def analyze_syllabus(file: UploadFile = File(...)):
 
     try:
         content = await file.read()
+        if len(content) > MAX_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File vượt quá giới hạn {MAX_UPLOAD_BYTES // (1024 * 1024)} MB",
+            )
         tmp_path.write_bytes(content)
 
         from src.syllabus_core.models.predict import analyze_pdf, get_model_version
 
         models = _state.get("models") or {}
-        result = analyze_pdf(tmp_path, models=models)
+        result = await run_in_threadpool(analyze_pdf, tmp_path, models=models)
         default_ver = get_model_version(models, "m1_section_classifier", default="m1-v1.0")
 
         return SyllabusAnalysisResponse(
@@ -352,7 +362,9 @@ async def ask(req: AskRequest):
 
     try:
         pipeline = _state["rag_pipeline"]
-        result = pipeline.answer(req.question, filter_course=req.course_filter)
+        result = await run_in_threadpool(
+            pipeline.answer, req.question, filter_course=req.course_filter
+        )
 
         if result.get("provider_used") == "error":
             chunks = result.get("retrieved_chunks", [])
