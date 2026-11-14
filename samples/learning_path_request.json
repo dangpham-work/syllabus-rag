@@ -1,13 +1,6 @@
 {
-  "target_courses": [
-    "841108",
-    "841109",
-    "841044"
-  ],
-  "passed_courses": [
-    "841020",
+  "target_course": "841108",
+  "completed_courses": [
     "841401"
-  ],
-  "max_credits_per_semester": 20
+  ]
 }
-

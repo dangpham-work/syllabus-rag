@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 # ---------------------------------------------------------------------------
@@ -46,11 +46,39 @@ class CLOClassifyRequest(BaseModel):
                     raise ValueError("Mỗi phần tử trong texts không được rỗng")
         return v
 
+    @model_validator(mode="after")
+    def require_text_or_texts(self):
+        if self.text is None and self.texts is None:
+            raise ValueError("Cần cung cấp 'text' hoặc 'texts'")
+        return self
+
     model_config = {
         "json_schema_extra": {
             "examples": [
                 {"text": "Áp dụng UML để mô hình hoá hệ thống phần mềm"},
                 {"texts": ["Liệt kê các kiểu dữ liệu", "Thiết kế kiến trúc MVC"]},
+            ]
+        }
+    }
+
+
+class CLOClassifyBatchRequest(BaseModel):
+    texts: list[str] = Field(description="Batch nhiều câu CLO cần phân loại")
+
+    @field_validator("texts")
+    @classmethod
+    def batch_texts_not_empty(cls, v):
+        if not v:
+            raise ValueError("texts không được rỗng")
+        for t in v:
+            if not t.strip():
+                raise ValueError("Mỗi phần tử trong texts không được rỗng")
+        return v
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"texts": ["Liệt kê các kiểu dữ liệu", "Thiết kế kiến trúc MVC"]}
             ]
         }
     }
@@ -203,10 +231,41 @@ class LearningPathResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# /courses
+# ---------------------------------------------------------------------------
+
+class CourseSummary(BaseModel):
+    code: str
+    name: str
+    credits: int
+    prerequisites: list[str] = Field(default_factory=list)
+    avg_bloom_level: float = 2.0
+    recommended_semester: int = 1
+
+
+class CourseListResponse(BaseModel):
+    courses: list[CourseSummary] = Field(default_factory=list)
+    total: int = 0
+
+
+class CourseDetailResponse(BaseModel):
+    code: str
+    name: str
+    credits: int
+    prerequisites: list[str] = Field(default_factory=list)
+    dependents: list[str] = Field(default_factory=list)
+    avg_bloom_level: float = 2.0
+    recommended_semester: int = 1
+    clos: list[CLOItem] = Field(default_factory=list)
+    sections: dict[str, str] = Field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
 # Error responses
 # ---------------------------------------------------------------------------
 
 class ErrorResponse(BaseModel):
     error: str
     detail: Optional[str] = None
-    retrieved: Optional[list[RetrievedChunk]] = None  # Dùng cho 503 khi LLM lỗi
+    retrieved_chunks: Optional[list[RetrievedChunk]] = None  # Dùng cho 503 khi LLM lỗi
+    retrieved: Optional[list[RetrievedChunk]] = None         # Alias tương thích ngược
